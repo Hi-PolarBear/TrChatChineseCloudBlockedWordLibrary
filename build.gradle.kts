@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     java
-    id("io.izzel.taboolib") version "2.0.22"
+    id("io.izzel.taboolib") version "2.0.23"
     id("org.jetbrains.kotlin.jvm") version "1.8.22"
 }
 
@@ -37,7 +37,7 @@ subprojects {
             install(Bukkit, BungeeCord, Velocity)
         }
         version {
-            taboolib = "6.2.3"
+            taboolib = "6.2.3-8cc2f66"
             coroutines = null
 //            isSkipKotlin = true
 //            isSkipKotlinRelocate = true
