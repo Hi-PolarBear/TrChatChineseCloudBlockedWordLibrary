@@ -37,7 +37,7 @@ subprojects {
             install(Bukkit, BungeeCord, Velocity)
         }
         version {
-            taboolib = "6.2.3-8cc2f66"
+            taboolib = "6.2.3-b217935"
             coroutines = null
 //            isSkipKotlin = true
 //            isSkipKotlinRelocate = true
@@ -61,7 +61,7 @@ subprojects {
         compileOnly(kotlin("stdlib"))
         compileOnly("com.google.code.gson:gson:2.8.5")
         compileOnly("com.google.guava:guava:21.0")
-        compileOnly("net.kyori:adventure-api:4.17.0")
+        compileOnly("net.kyori:adventure-api:4.21.0")
     }
 
     // 编译配置

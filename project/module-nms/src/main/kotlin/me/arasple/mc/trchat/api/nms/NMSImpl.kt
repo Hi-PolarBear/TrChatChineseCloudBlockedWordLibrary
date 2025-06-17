@@ -1,6 +1,7 @@
 package me.arasple.mc.trchat.api.nms
 
 import me.arasple.mc.trchat.util.ServerUtil
+import me.arasple.mc.trchat.util.nilUUID
 import me.arasple.mc.trchat.util.reportOnce
 import net.minecraft.server.v1_12_R1.ChatMessageType
 import net.minecraft.server.v1_12_R1.PacketPlayOutChat
@@ -71,7 +72,7 @@ class NMSImpl : NMS() {
             receiver.sendPacket(PacketPlayOutChat::class.java.invokeConstructor(
                 craftChatMessageFromComponent(component),
                 ChatMessageType.CHAT,
-                sender
+                sender ?: nilUUID
             ))
         } else if (versionId >= 11200) {
             receiver.sendPacket(PacketPlayOutChat::class.java.invokeConstructor(
