@@ -47,22 +47,17 @@ object MessageColors {
             return string.colorify()
         }
 
-        string = if (sender.hasPermission(COLOR_PERMISSION_NODE + "rainbow")) {
-            string.parseRainbow()
-        } else {
-            string.replace(HexUtils.RAINBOW_PATTERN.toRegex(), "")
+        // 2025/6/18 https://github.com/TrPlugins/TrChat/issues/477
+        if (sender.hasPermission(COLOR_PERMISSION_NODE + "rainbow")) {
+            string = string.parseRainbow()
         }
 
-        string = if (sender.hasPermission(COLOR_PERMISSION_NODE + "gradients")) {
-            string.parseGradients()
-        } else {
-            string.replace(HexUtils.GRADIENT_PATTERN.toRegex(), "")
+        if (sender.hasPermission(COLOR_PERMISSION_NODE + "gradients")) {
+            string = string.parseGradients()
         }
 
         if (sender.hasPermission(COLOR_PERMISSION_NODE + "hex")) {
             string = string.parseHex()
-        } else {
-            HexUtils.HEX_PATTERNS.forEach { string = string.replace(it.toRegex(), "") }
         }
 
         getColors(sender).forEach { color ->

@@ -77,6 +77,8 @@ object BukkitComponentManager : ComponentManager {
     }
 
     override fun filterComponent(component: ComponentText, maxLength: Int): ComponentText {
+        // TODO 1.21.5
+        if (Components.useAdventure) return component
         return filteredCache.get(component) {
             validateComponent(DefaultComponent(listOf(filterComponent(component.toSpigotObject()))), maxLength)
         }

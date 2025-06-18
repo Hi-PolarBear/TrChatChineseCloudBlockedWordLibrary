@@ -27,7 +27,7 @@ subprojects {
                 "database-player"
             )
             install(
-                "minecraft-chat",
+//                "minecraft-chat",
                 "minecraft-command-helper",
                 "minecraft-i18n",
                 "minecraft-kether",

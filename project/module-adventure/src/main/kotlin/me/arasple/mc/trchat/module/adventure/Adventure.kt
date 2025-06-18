@@ -5,7 +5,7 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.inventory.ItemStack
 import taboolib.module.chat.ComponentText
-import taboolib.module.chat.Components
+import taboolib.module.chat.impl.AdventureComponent
 
 private val legacySerializer: Any? = try {
     LegacyComponentSerializer.legacySection()
@@ -23,10 +23,13 @@ fun gson(component: Component) = (gsonSerializer as GsonComponentSerializer).ser
 
 fun gson(string: String) = (gsonSerializer as GsonComponentSerializer).deserialize(string)
 
-fun Component.toNative() = Components.parseRaw(gson(this))
-
-fun ComponentText.toAdventure() = gson(toRawMessage())
+fun ComponentText.toAdventure(): Component {
+    if (this is AdventureComponent) return this.component
+    else return gson(this.toRawMessage())
+}
 
 fun ComponentText.hoverItemAdventure(item: ItemStack): ComponentText {
-    return toAdventure().hoverEvent(item.asHoverEvent()).toNative()
+    this as? AdventureComponent ?: error("Unsupported component type.")
+    this.latest.hoverEvent(item.asHoverEvent())
+    return this
 }

@@ -7,13 +7,11 @@ import me.arasple.mc.trchat.util.color.colorify
 import me.arasple.mc.trchat.util.isDragonCoreHooked
 import me.arasple.mc.trchat.util.papiRegex
 import me.arasple.mc.trchat.util.setPlaceholders
-import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import taboolib.common.util.replaceWithOrder
 import taboolib.module.chat.ComponentText
 import taboolib.module.chat.Components
-import taboolib.module.chat.impl.DefaultComponent
 
 /**
  * @author ItsFlicker
@@ -33,8 +31,7 @@ class Text(val content: String, val condition: Condition?) {
         }
         text = text.replaceWithOrder(*vars).colorify()
         return if (isDragonCoreHooked) {
-            // 使有效部分在latest
-            Components.empty().append(DefaultComponent(listOf(TextComponent(text))))
+            Components.text(text, color = false)
         } else {
             Components.text(text)
         }

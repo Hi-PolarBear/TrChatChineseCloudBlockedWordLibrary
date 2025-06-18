@@ -4,11 +4,10 @@ import me.arasple.mc.trchat.module.conf.file.Settings
 import me.arasple.mc.trchat.module.internal.script.Condition
 import me.arasple.mc.trchat.util.*
 import me.arasple.mc.trchat.util.color.colorify
-import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.command.CommandSender
 import taboolib.common.util.replaceWithOrder
 import taboolib.module.chat.ComponentText
-import taboolib.module.chat.impl.DefaultComponent
+import taboolib.module.chat.Components
 
 sealed interface Style {
 
@@ -36,7 +35,7 @@ sealed interface Style {
                     component.hoverText(content.parseSimple())
                 } else {
                     if (isDragonCoreHooked) {
-                        component.hoverText(DefaultComponent(listOf(TextComponent(content.colorify()))))
+                        component.hoverText(Components.text(content.colorify(), color = false))
                     } else {
                         component.hoverText(content.colorify())
                     }

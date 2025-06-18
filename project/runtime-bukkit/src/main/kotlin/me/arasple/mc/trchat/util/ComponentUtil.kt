@@ -14,11 +14,11 @@ import org.bukkit.inventory.meta.BlockStateMeta
 import org.bukkit.inventory.meta.ItemMeta
 import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.module.chat.ComponentText
+import taboolib.module.chat.Components
 import taboolib.module.chat.component
 import taboolib.module.nms.MinecraftVersion.versionId
 import taboolib.module.nms.NMSItemTag
 import taboolib.module.nms.getI18nName
-import taboolib.platform.Folia
 import taboolib.platform.util.*
 
 fun String.parseSimple() = component().build {
@@ -26,10 +26,10 @@ fun String.parseSimple() = component().build {
 }
 
 fun ComponentText.hoverItemFixed(item: ItemStack): ComponentText {
-    if (Folia.isFolia) {
-        return hoverItemAdventure(item)
-    }
     var newItem = item.optimizeShulkerBox()
+    if (Components.useAdventure) {
+        return hoverItemAdventure(newItem)
+    }
     newItem = NMS.instance.optimizeNBT(newItem)
     if (versionId >= 12005) {
         this.getProperty<ArrayList<BaseComponent>>("latest")!!.forEach {

@@ -16,8 +16,10 @@ import taboolib.common.LifeCycle
 import taboolib.common.platform.*
 import taboolib.common.platform.function.console
 import taboolib.common.platform.function.pluginVersion
+import taboolib.module.chat.Components
 import taboolib.module.lang.sendLang
 import taboolib.module.nms.MinecraftVersion.versionId
+import taboolib.platform.Folia
 
 @PlatformSide(Platform.BUKKIT)
 object TrChatBukkit : Plugin() {
@@ -35,6 +37,9 @@ object TrChatBukkit : Plugin() {
                 isPaperEnv = true
             }
         } catch (_: ClassNotFoundException) {
+        }
+        if (Folia.isFolia || (isPaperEnv && versionId >= 12105)) {
+            Components.useAdventure = true
         }
     }
 
