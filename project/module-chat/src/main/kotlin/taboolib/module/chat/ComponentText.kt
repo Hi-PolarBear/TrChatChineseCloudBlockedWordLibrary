@@ -22,6 +22,9 @@ interface ComponentText : Source {
     operator fun plusAssign(other: ComponentText)
 
     /** 添加文本块 */
+    fun append(text: String): ComponentText = append(text, color = true)
+
+    /** 添加文本块 */
     fun append(text: String, color: Boolean = true): ComponentText
 
     /** 追加另一个 [ComponentText] */
