@@ -303,6 +303,10 @@ class AdventureComponent() : ComponentText {
         return net.md_5.bungee.api.chat.TextComponent(*ComponentSerializer.parse(toRawMessage()))
     }
 
+    override fun toAdventureObject(): Component {
+        return component
+    }
+
     override fun toLegacyRawMessage(): RawMessage {
         return RawMessage(this)
     }

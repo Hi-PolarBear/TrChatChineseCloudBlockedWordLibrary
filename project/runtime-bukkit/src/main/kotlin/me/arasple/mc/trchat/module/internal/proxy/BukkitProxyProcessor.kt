@@ -77,7 +77,9 @@ sealed interface BukkitProxyProcessor : PluginMessageListener {
                 val raw = data[3]
                 val message = Components.parseRaw(raw)
 
-                CommandReply.lastMessageFrom[to] = from
+                if (from.isNotEmpty()) {
+                    CommandReply.lastMessageFrom[to] = from
+                }
                 getProxyPlayer(to)?.sendComponent(null, message)
             }
             "BroadcastRaw" -> {

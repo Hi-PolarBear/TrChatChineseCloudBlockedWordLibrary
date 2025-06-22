@@ -35,6 +35,7 @@ subprojects {
             )
             install(JavaScript)
             install(Bukkit, BungeeCord, Velocity)
+            modules.remove("minecraft-chat")
         }
         version {
             taboolib = "6.2.3-b217935"

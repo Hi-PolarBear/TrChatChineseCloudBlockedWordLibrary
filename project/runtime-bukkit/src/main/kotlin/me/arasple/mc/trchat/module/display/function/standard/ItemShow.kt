@@ -206,10 +206,6 @@ object ItemShow : Function("ITEM") {
     @Suppress("Deprecation")
     private fun ItemStack.getNameComponent(player: Player): ComponentText {
         if (!originName && itemMeta?.hasDisplayName() == true) {
-//            try {
-//                return itemMeta!!.displayName()!!.toNative()
-//            } catch (_: Throwable) {
-//            }
             if (isDragonCoreHooked) {
                 return Components.text(itemMeta!!.displayName, color = false)
             }
@@ -222,6 +218,12 @@ object ItemShow : Function("ITEM") {
             } catch (_: Throwable) {
             }
             return Components.text(itemMeta!!.displayName)
+        } else if (kotlin.runCatching { itemMeta?.hasItemName() }.getOrDefault(false) == true) {
+            // 新组件 item_name
+            if (Components.useAdventure) {
+                return Components.empty().append(AdventureComponent(itemMeta!!.itemName()))
+            }
+            return Components.text(itemMeta!!.itemName)
         } else {
             if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_15)) {
                 val key = try {

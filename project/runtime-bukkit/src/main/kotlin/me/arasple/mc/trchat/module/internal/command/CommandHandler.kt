@@ -1,9 +1,11 @@
 package me.arasple.mc.trchat.module.internal.command
 
+import me.arasple.mc.trchat.api.impl.BukkitProxyManager
 import me.arasple.mc.trchat.module.internal.TrChatBukkit
 import me.arasple.mc.trchat.module.internal.command.sub.CommandColor
 import me.arasple.mc.trchat.module.internal.command.sub.CommandRecallMessage
 import me.arasple.mc.trchat.util.data
+import me.arasple.mc.trchat.util.nilUUID
 import me.arasple.mc.trchat.util.parseSimple
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -13,6 +15,7 @@ import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.*
 import taboolib.expansion.createHelper
 import taboolib.module.lang.sendLang
+import taboolib.platform.util.onlinePlayers
 import taboolib.platform.util.sendLang
 
 /**
@@ -63,12 +66,24 @@ object CommandHandler {
 
     @CommandBody(permission = "trchat.command.tellsimple", optional = true)
     val tellsimple = subCommand {
-        player(suggest = listOf("*")) {
+        dynamic("player") {
+            suggest {
+                BukkitProxyManager.getPlayerNamesMerged().toList() + "*"
+            }
             dynamic("message") {
-                execute<CommandSender> { _, ctx, argument ->
+                execute<CommandSender> { sender, ctx, argument ->
                     val component = argument.parseSimple()
-                    ctx.players("player").forEach {
-                        component.sendTo(it)
+                    if (BukkitProxyManager.processor != null) {
+                        val player = ctx["player"]
+                        if (player == "*") {
+                            BukkitProxyManager.sendBroadcastRaw(onlinePlayers.firstOrNull(), nilUUID, component)
+                        } else {
+                            BukkitProxyManager.sendPrivateRaw(onlinePlayers.firstOrNull(), player, "", component)
+                        }
+                    } else {
+                        ctx.players("player").forEach {
+                            component.sendTo(it)
+                        }
                     }
                 }
             }

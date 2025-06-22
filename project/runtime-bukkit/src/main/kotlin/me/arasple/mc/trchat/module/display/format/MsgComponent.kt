@@ -3,17 +3,18 @@ package me.arasple.mc.trchat.module.display.format
 import me.arasple.mc.trchat.module.display.format.obj.Style
 import me.arasple.mc.trchat.module.display.format.obj.Style.Companion.applyTo
 import me.arasple.mc.trchat.module.display.function.Function
-import me.arasple.mc.trchat.module.internal.hook.HookPlugin
 import me.arasple.mc.trchat.module.internal.script.Condition
 import me.arasple.mc.trchat.util.color.CustomColor
 import me.arasple.mc.trchat.util.isDragonCoreHooked
 import me.arasple.mc.trchat.util.pass
 import me.arasple.mc.trchat.util.session
+import net.kyori.adventure.text.TextComponent
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import taboolib.common.util.VariableReader
 import taboolib.module.chat.ComponentText
 import taboolib.module.chat.Components
+import taboolib.module.chat.impl.AdventureComponent
 
 /**
  * @author ItsFlicker
@@ -21,9 +22,26 @@ import taboolib.module.chat.Components
  */
 class MsgComponent(val defaultColor: List<Pair<CustomColor, Condition?>>, style: List<Style>) : JsonComponent(null, style) {
 
+    fun processComponent(sender: CommandSender, msg: TextComponent, disabledFunctions: List<String>): TextComponent {
+        val children = msg.children().map { processComponent(sender, it as TextComponent, disabledFunctions) }
+        val new = createComponent(sender, msg.content(), disabledFunctions).toAdventureObject() as TextComponent
+        val style = new.style().merge(msg.style())
+        return new.children(new.children() + children).style(style)
+    }
+
+    fun createComponent(sender: CommandSender, msg: ComponentText, disabledFunctions: List<String>): ComponentText {
+        if (!Components.useAdventure) {
+            return createComponent(sender, msg.toPlainText(), disabledFunctions)
+        }
+        val component = msg.toAdventureObject() as TextComponent
+        return AdventureComponent(processComponent(sender, component, disabledFunctions))
+    }
+
     fun createComponent(sender: CommandSender, msg: String, disabledFunctions: List<String>): ComponentText {
+        if (msg.isBlank()) return Components.empty()
         val component = Components.empty()
-        var message = HookPlugin.getItemsAdder().replaceFontImages(msg, sender as? Player)
+//        var message = HookPlugin.getItemsAdder().replaceFontImages(msg, sender as? Player)
+        var message = msg.replace("{{", "\\{{")
 
         // 非玩家 不处理functions
         if (sender !is Player) {

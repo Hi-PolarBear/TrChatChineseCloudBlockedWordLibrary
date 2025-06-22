@@ -21,6 +21,7 @@ import taboolib.common.platform.function.getProxyPlayer
 import taboolib.common.platform.function.unregisterCommand
 import taboolib.common.util.Strings
 import taboolib.common.util.subList
+import taboolib.module.chat.ComponentText
 import taboolib.module.chat.Components
 import taboolib.module.lang.sendLang
 import taboolib.platform.util.onlinePlayers
@@ -128,19 +129,25 @@ open class Channel(
     }
 
     open fun execute(player: Player, message: String, toConsole: Boolean = true): ChannelExecuteResult {
-        if (!checkLimits(player, message)) {
+        return execute(player, Components.text(message), toConsole)
+    }
+
+    open fun execute(player: Player, message: ComponentText, toConsole: Boolean = true): ChannelExecuteResult {
+        var plain = message.toPlainText()
+        if (!checkLimits(player, plain)) {
             return ChannelExecuteResult(failedReason = ChannelExecuteResult.FailReason.LIMITED)
         }
         val session = player.session
         session.lastChannel = this
-        session.lastPublicMessage = message
+        session.lastPublicMessage = plain
         val event = TrChatEvent(this, session, message)
         if (!event.call()) {
             return ChannelExecuteResult(failedReason = ChannelExecuteResult.FailReason.EVENT)
         }
-        val msg = events.process(player, event.message)?.replace("{{", "\\{{")
+        val msg = events.process(player, event.component)
             ?: return ChannelExecuteResult(failedReason = ChannelExecuteResult.FailReason.EVENT)
-        ChatLogs.logNormal(player.name, msg)
+        plain = msg.toPlainText()
+        ChatLogs.logNormal(player.name, plain)
         Metrics.increase(0)
 
         val component = Components.empty()
@@ -176,14 +183,14 @@ open class Channel(
         // Local
         when (settings.range.type) {
             ChannelRange.Type.ALL -> {
-                listeners.filter { events.send(player, it, msg) }.forEach {
+                listeners.filter { events.send(player, it, plain) }.forEach {
                     getProxyPlayer(it)?.sendComponent(player, component)
                 }
             }
             ChannelRange.Type.SINGLE_WORLD -> {
                 onlinePlayers.filter { it.name in listeners
                         && it.world == player.world
-                        && events.send(player, it.name, msg) }.forEach {
+                        && events.send(player, it.name, plain) }.forEach {
                     it.sendComponent(player, component)
                 }
             }
@@ -191,12 +198,12 @@ open class Channel(
                 onlinePlayers.filter { it.name in listeners
                         && it.world == player.world
                         && it.location.distance(player.location) <= settings.range.distance
-                        && events.send(player, it.name, msg) }.forEach {
+                        && events.send(player, it.name, plain) }.forEach {
                     it.sendComponent(player, component)
                 }
             }
             ChannelRange.Type.SELF -> {
-                if (events.send(player, player.name, msg)) {
+                if (events.send(player, player.name, plain)) {
                     player.sendComponent(player, component)
                 }
             }

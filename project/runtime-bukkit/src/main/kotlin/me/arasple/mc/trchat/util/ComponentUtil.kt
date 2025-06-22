@@ -4,7 +4,6 @@ import me.arasple.mc.trchat.TrChat
 import me.arasple.mc.trchat.api.nms.NMS
 import me.arasple.mc.trchat.module.adventure.hoverItemAdventure
 import me.arasple.mc.trchat.util.color.colorify
-import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.api.chat.ComponentBuilder
 import net.md_5.bungee.api.chat.HoverEvent
 import org.bukkit.Material
@@ -12,10 +11,10 @@ import org.bukkit.block.ShulkerBox
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BlockStateMeta
 import org.bukkit.inventory.meta.ItemMeta
-import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.module.chat.ComponentText
 import taboolib.module.chat.Components
 import taboolib.module.chat.component
+import taboolib.module.chat.impl.DefaultComponent
 import taboolib.module.nms.MinecraftVersion.versionId
 import taboolib.module.nms.NMSItemTag
 import taboolib.module.nms.getI18nName
@@ -32,7 +31,7 @@ fun ComponentText.hoverItemFixed(item: ItemStack): ComponentText {
     }
     newItem = NMS.instance.optimizeNBT(newItem)
     if (versionId >= 12005) {
-        this.getProperty<ArrayList<BaseComponent>>("latest")!!.forEach {
+        (this as DefaultComponent).latest.forEach {
             it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_ITEM, ComponentBuilder(NMSItemTag.instance.toMinecraftJson(newItem)).create())
         }
         return this

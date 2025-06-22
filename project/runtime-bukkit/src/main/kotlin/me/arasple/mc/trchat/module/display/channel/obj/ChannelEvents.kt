@@ -2,6 +2,8 @@ package me.arasple.mc.trchat.module.display.channel.obj
 
 import me.arasple.mc.trchat.module.internal.script.Reaction
 import org.bukkit.entity.Player
+import taboolib.module.chat.ComponentText
+import taboolib.module.chat.Components
 
 /**
  * @author ItsFlicker
@@ -14,13 +16,13 @@ class ChannelEvents(
     private val quit: Reaction?
 ) {
 
-    fun process(sender: Player, message: String): String? {
-        process ?: return message
-        return when (val result = process.eval(sender, "message" to message)) {
-            null -> message
-            is Boolean -> message.takeIf { result }
-            is String -> result
-            else -> message
+    fun process(sender: Player, component: ComponentText): ComponentText? {
+        process ?: return component
+        return when (val result = process.eval(sender, "message" to component.toPlainText())) {
+            null -> component
+            is Boolean -> component.takeIf { result }
+            is String -> Components.text(result)
+            else -> component
         }
     }
 

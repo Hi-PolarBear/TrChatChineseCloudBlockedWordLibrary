@@ -24,6 +24,7 @@ import taboolib.common.platform.command.suggest
 import taboolib.common.platform.function.console
 import taboolib.common.platform.function.getProxyPlayer
 import taboolib.common.util.subList
+import taboolib.module.chat.ComponentText
 import taboolib.module.chat.Components
 import taboolib.module.lang.sendLang
 import taboolib.platform.util.onlinePlayers
@@ -140,8 +141,9 @@ class PrivateChannel(
         return ChannelExecuteResult.success(component, component)
     }
 
-    override fun execute(player: Player, message: String, toConsole: Boolean): ChannelExecuteResult {
-        if (!checkLimits(player, message)) {
+    override fun execute(player: Player, message: ComponentText, toConsole: Boolean): ChannelExecuteResult {
+        var plain = message.toPlainText()
+        if (!checkLimits(player, plain)) {
             return ChannelExecuteResult(failedReason = ChannelExecuteResult.FailReason.LIMITED)
         }
         val session = player.session
@@ -152,13 +154,14 @@ class PrivateChannel(
             return ChannelExecuteResult(failedReason = ChannelExecuteResult.FailReason.NO_RECEIVER)
         }
         session.lastChannel = this
-        session.lastPrivateMessage = message
+        session.lastPrivateMessage = plain
         val event = TrChatEvent(this, session, message)
         if (!event.call()) {
             return ChannelExecuteResult(failedReason = ChannelExecuteResult.FailReason.EVENT)
         }
-        val msg = events.process(player, event.message)?.replace("{{", "\\{{")
+        val msg = events.process(player, event.component)
             ?: return ChannelExecuteResult(failedReason = ChannelExecuteResult.FailReason.EVENT)
+        plain = msg.toPlainText()
 
         val send = Components.empty()
         val msgComponent = Components.empty()
@@ -191,7 +194,7 @@ class PrivateChannel(
             return ChannelExecuteResult(failedReason = ChannelExecuteResult.FailReason.EVENT)
         }
         // Channel event
-        if (!events.send(player, to, msg)) {
+        if (!events.send(player, to, plain)) {
             return ChannelExecuteResult(failedReason = ChannelExecuteResult.FailReason.EVENT)
         }
         player.sendComponent(player, send)
@@ -203,7 +206,7 @@ class PrivateChannel(
         console().sendLang("Private-Message-Spy-Format", player.name, to, msgComponent.toLegacyText())
 
         CommandReply.lastMessageFrom[to] = player.name
-        ChatLogs.logPrivate(player.name, to, message)
+        ChatLogs.logPrivate(player.name, to, plain)
         Metrics.increase(0)
 
         if (settings.proxy && BukkitProxyManager.processor != null) {

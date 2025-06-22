@@ -150,7 +150,7 @@ object BukkitProxyManager : ClientMessageManager {
         }
     }
 
-    fun sendBroadcastRaw(recipient: Any?, uuid: UUID, component: ComponentText, listenPerm: String, doubleTransfer: Boolean, ports: List<Int>) {
+    fun sendBroadcastRaw(recipient: Any?, uuid: UUID, component: ComponentText, listenPerm: String = "", doubleTransfer: Boolean = true, ports: List<Int> = emptyList()) {
         sendMessage(recipient, arrayOf(
             "BroadcastRaw",
             uuid.parseString(),

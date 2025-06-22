@@ -2,6 +2,8 @@ package me.arasple.mc.trchat.api.event
 
 import me.arasple.mc.trchat.module.display.ChatSession
 import me.arasple.mc.trchat.module.display.channel.Channel
+import taboolib.module.chat.ComponentText
+import taboolib.module.chat.Components
 import taboolib.platform.type.BukkitProxyEvent
 
 /**
@@ -14,9 +16,15 @@ import taboolib.platform.type.BukkitProxyEvent
 class TrChatEvent(
     val channel: Channel,
     val session: ChatSession,
-    var message: String,
+    var component: ComponentText,
     val forward: Boolean = true
 ) : BukkitProxyEvent() {
 
     val player = session.player
+
+    var message = component.toPlainText()
+        set(value) {
+            field = value
+            component = Components.text(value)
+        }
 }

@@ -24,4 +24,8 @@ class HookItemsAdder : HookAbstract() {
             message
         }
     }
+
+//    fun replaceFontImages(message: ComponentText, player: Player?): String {
+//
+//    }
 }
