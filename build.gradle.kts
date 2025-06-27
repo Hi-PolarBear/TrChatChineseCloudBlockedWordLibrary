@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     java
     id("io.izzel.taboolib") version "2.0.23"
-    id("org.jetbrains.kotlin.jvm") version "1.8.22"
+    id("org.jetbrains.kotlin.jvm") version "2.1.20"
 }
 
 subprojects {
@@ -27,7 +27,7 @@ subprojects {
                 "database-player"
             )
             install(
-//                "minecraft-chat",
+                "minecraft-chat",
                 "minecraft-command-helper",
                 "minecraft-i18n",
                 "minecraft-kether",
@@ -35,10 +35,9 @@ subprojects {
             )
             install(JavaScript)
             install(Bukkit, BungeeCord, Velocity)
-            modules.remove("minecraft-chat")
         }
         version {
-            taboolib = "6.2.3-b217935"
+            taboolib = "6.2.3-eeb12e4"
             coroutines = null
 //            isSkipKotlin = true
 //            isSkipKotlinRelocate = true

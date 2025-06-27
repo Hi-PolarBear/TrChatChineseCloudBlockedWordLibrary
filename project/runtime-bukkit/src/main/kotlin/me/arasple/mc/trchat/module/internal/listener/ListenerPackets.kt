@@ -4,6 +4,7 @@ import me.arasple.mc.trchat.module.display.ChatSession
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.SubscribeEvent
+import taboolib.library.reflex.Reflex.Companion.setProperty
 import taboolib.module.configuration.ConfigNode
 import taboolib.module.nms.MinecraftVersion.versionId
 import taboolib.module.nms.PacketReceiveEvent
@@ -22,7 +23,6 @@ object ListenerPackets {
 
     /**
      * 去除进入时右上角提示/禁止聊天举报
-     * TODO Support 1.21
      */
     @SubscribeEvent
     fun secure(e: PacketSendEvent) {
@@ -31,6 +31,9 @@ object ListenerPackets {
         when (e.packet.name) {
             "ClientboundServerDataPacket" -> {
                 if (versionId < 12005) e.packet.write("enforcesSecureChat", true)
+            }
+            "PacketPlayOutLogin" -> {
+                if (versionId >= 12005) e.packet.source.setProperty("l", true, findToParent = false, remap = false)
             }
         }
     }
