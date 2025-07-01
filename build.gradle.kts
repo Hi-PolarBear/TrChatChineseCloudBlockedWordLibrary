@@ -37,7 +37,7 @@ subprojects {
             install(Bukkit, BungeeCord, Velocity)
         }
         version {
-            taboolib = "6.2.3-eeb12e4"
+            taboolib = "6.2.3-12d4045"
             coroutines = null
 //            isSkipKotlin = true
 //            isSkipKotlinRelocate = true
