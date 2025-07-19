@@ -68,7 +68,7 @@ object CommandHandler {
     val tellsimple = subCommand {
         dynamic("player") {
             suggest {
-                BukkitProxyManager.getPlayerNamesMerged().toList() + "*"
+                BukkitProxyManager.getPlayerNamesMerged(includeVanish = true).toList() + "*"
             }
             dynamic("message") {
                 execute<CommandSender> { sender, ctx, argument ->
@@ -95,13 +95,6 @@ object CommandHandler {
         execute<Player> { sender, _, _ ->
             val state = sender.data.switchSpy()
             sender.sendLang(if (state) "Private-Message-Spy-On" else "Private-Message-Spy-Off")
-        }
-    }
-
-    @CommandBody(permission = "trchat.command.vanish", optional = true)
-    val vanish = subCommand {
-        execute<Player> { sender, _, _ ->
-            sender.data.switchVanish()
         }
     }
 

@@ -1,6 +1,6 @@
 package me.arasple.mc.trchat.module.display.format.obj
 
-import me.arasple.mc.trchat.module.internal.hook.HookPlugin
+import me.arasple.mc.trchat.module.internal.hook.hookItemsAdder
 import me.arasple.mc.trchat.module.internal.script.Condition
 import me.arasple.mc.trchat.module.internal.script.kether.KetherHandler
 import me.arasple.mc.trchat.util.color.colorify
@@ -27,7 +27,7 @@ class Text(val content: String, val condition: Condition?) {
             if (dynamic) {
                 text = text.setPlaceholders(sender)
             }
-            text = HookPlugin.getItemsAdder().replaceFontImages(text, null)
+            text = hookItemsAdder.replaceFontImages(text, null)
         }
         text = text.replaceWithOrder(*vars).colorify()
         return if (isDragonCoreHooked) {

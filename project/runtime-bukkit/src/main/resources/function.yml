@@ -56,12 +56,6 @@ General:
       - '[ender]'
       - '[enderchest]'
     Actions: [ ]
-  Image-Show:
-    Enabled: true
-    Permission: 'trchat.function.imageshow'
-    Cooldown: '1m'
-    Key: '!\[([^;]*)\]\(([a-zA-Z]+://[^\s]*)\)'
-    Action: [ ]
 Custom:
   # 示例 —— 网站分享
   shareUrl:

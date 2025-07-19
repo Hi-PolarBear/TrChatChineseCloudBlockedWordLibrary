@@ -37,9 +37,12 @@ object ListenerSignChange {
     fun onSignChange(e: SignChangeEvent) {
         val p = e.player
 
-        for (index in e.lines.indices) {
+        var index = -1
+        for (origin in e.lines) {
+            index++
+            if (origin.isBlank()) continue
             if (filter) {
-                e.setLine(index, TrChat.api().getFilterManager().filter(e.getLine(index) ?: "", adaptPlayer(p)).filtered)
+                e.setLine(index, TrChat.api().getFilterManager().filter(origin, adaptPlayer(p)).filtered)
             }
             if (simple && TrChatBukkit.isPaperEnv && p.hasPermission("trchat.simple.sign")) {
                 e.line(index, (e.getLine(index) ?: "").parseSimple().toAdventure())

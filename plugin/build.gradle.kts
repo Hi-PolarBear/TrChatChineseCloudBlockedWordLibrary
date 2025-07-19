@@ -15,6 +15,7 @@ taboolib {
             name("EcoEnchants").with("bukkit").optional(true)
             name("ItemsAdder").with("bukkit").optional(true)
             name("Nova").with("bukkit").optional(true)
+            name("SayanVanish").with("bukkit").optional(true)
             name("Multiverse-Core").with("bukkit").loadafter(true)
             name("Geyser-Spigot").with("bukkit").loadafter(true)
         }

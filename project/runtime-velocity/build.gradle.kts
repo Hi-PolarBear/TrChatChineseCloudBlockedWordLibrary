@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 dependencies {
@@ -12,8 +13,8 @@ java {
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        jvmTarget = "17"
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_17
         freeCompilerArgs = listOf("-Xjvm-default=all", "-Xextended-compiler-checks")
     }
 }

@@ -8,6 +8,7 @@ import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.command.command
+import taboolib.common.platform.command.suggest
 import taboolib.expansion.createHelper
 import taboolib.module.lang.sendLang
 
@@ -24,7 +25,7 @@ object CommandChannel {
         command("channel", listOf("chatchannel", "trchannel"), "TrChat Channel", permission = "trchat.command.channel") {
             literal("join") {
                 dynamic("channel") {
-                    suggestion<Player> { _, _ ->
+                    suggest {
                         Channel.channels.keys.toList()
                     }
                     execute<Player> { sender, _, argument ->

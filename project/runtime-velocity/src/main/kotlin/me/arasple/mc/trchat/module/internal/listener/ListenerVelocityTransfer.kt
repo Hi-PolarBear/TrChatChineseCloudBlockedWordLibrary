@@ -74,8 +74,12 @@ object ListenerVelocityTransfer {
                 }
             }
             "UpdateNames" -> {
-                val names = data[1].split(",").map { it.split("-", limit = 2) }
-                VelocityProxyManager.allNames[connection.serverInfo.address.port] = names.associate { it[0] to it[1].takeIf { dn -> dn != "null" } }
+                val names = data[2].split(",")
+                val displayNames = data[3].split(",")
+                val uuids = data[4].split(",")
+                VelocityProxyManager.allNames[connection.serverInfo.address.port] = names.mapIndexed { index, name ->
+                    Triple(name, displayNames[index], uuids[index])
+                }
             }
         }
     }

@@ -6,7 +6,7 @@ import github.scarsz.discordsrv.api.events.GameChatMessagePreProcessEvent
 import github.scarsz.discordsrv.dependencies.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import me.arasple.mc.trchat.TrChat
 import me.arasple.mc.trchat.module.display.format.MsgComponent
-import me.arasple.mc.trchat.module.internal.hook.HookPlugin
+import me.arasple.mc.trchat.module.internal.hook.hookDiscordSRV
 import me.arasple.mc.trchat.util.pass
 import me.arasple.mc.trchat.util.session
 import org.bukkit.entity.Player
@@ -50,8 +50,8 @@ class ListenerDiscordSRV {
 
         @Awake(LifeCycle.ACTIVE)
         fun register() {
-            if (HookPlugin.getDiscordSRV().isHooked) {
-                HookPlugin.getDiscordSRV().registerListener(ListenerDiscordSRV())
+            if (hookDiscordSRV.isHooked) {
+                hookDiscordSRV.registerListener(ListenerDiscordSRV())
             }
         }
     }

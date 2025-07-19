@@ -229,6 +229,7 @@ Mute-Muted-Player: '&8[&3Tr&bChat&8] &7You muted {0} for {1}.Reason: {2}'
 Mute-Cancel-Muted-Player: '&8[&3Tr&bChat&8] &7You cancelled muting {0}.'
 Mute-Muted-All: '&8[&3Tr&bChat&8] &7Global muted.'
 Mute-Cancel-Muted-All: '&8[&3Tr&bChat&8] &7Global mute canceled.'
+Mute-Wrong-Format: '&8[&3Tr&bChat&8] &7{0} is not a correct time!'
 
 Ignore-Ignored-Player: '&8[&3Tr&bChat&8] &7Ignored &f{0}''s &7messages.'
 Ignore-Cancel-Player: '&8[&3Tr&bChat&8] &7Restore receiving &f{0}''s &7messages.'

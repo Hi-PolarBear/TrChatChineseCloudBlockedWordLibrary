@@ -5,7 +5,6 @@ import me.arasple.mc.trchat.api.impl.BukkitProxyManager
 import me.arasple.mc.trchat.module.conf.file.Functions
 import me.arasple.mc.trchat.module.display.function.Function
 import me.arasple.mc.trchat.module.display.function.StandardFunction
-import me.arasple.mc.trchat.module.internal.data.PlayerData
 import me.arasple.mc.trchat.module.internal.script.Reaction
 import me.arasple.mc.trchat.util.CooldownType
 import me.arasple.mc.trchat.util.isInCooldown
@@ -86,8 +85,8 @@ object Mention : Function("MENTION") {
     }
 
     fun getRegex(player: Player): Regex? {
-        val names = BukkitProxyManager.getPlayerNames().keys
-            .filter { (selfMention || it != player.name) && it !in PlayerData.vanishing }
+        val names = BukkitProxyManager.getPlayerNames(player.hasPermission("trchat.bypass.vanish")).keys
+            .filter { (selfMention || it != player.name) }
             .takeIf { it.isNotEmpty() }
             ?.sortedByDescending { it.length }
             ?.joinToString("|") { Regex.escape(it) }

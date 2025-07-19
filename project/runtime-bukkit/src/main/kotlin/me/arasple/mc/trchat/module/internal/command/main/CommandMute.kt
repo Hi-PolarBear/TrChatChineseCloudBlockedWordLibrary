@@ -43,7 +43,7 @@ object CommandMute {
                 }
                 dynamic("time") {
                     suggestUncheck {
-                        listOf("1h", "2d", "15m")
+                        listOf("1d", "3h", "15m", "30s")
                     }
                     execute<CommandSender> { sender, ctx, _ ->
                         mute(sender, ctx["player"], ctx["time"], "null")
@@ -79,7 +79,12 @@ object CommandMute {
         val player = Bukkit.getPlayer(name)
             ?: return sender.sendLang("Command-Player-Not-Exist")
         val data = player.data
-        data.updateMuteTime(time.parseMillis())
+        val millis = try {
+            time.parseMillis()
+        } catch (_: Throwable) {
+            return sender.sendLang("Mute-Wrong-Format", time)
+        }
+        data.updateMuteTime(millis)
         data.setMuteReason(reason)
         sender.sendLang("Mute-Muted-Player", player.name, time, reason)
         player.sendLang("General-Muted", muteDateFormat.format(data.muteTime), data.muteReason)

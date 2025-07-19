@@ -20,9 +20,9 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import taboolib.common.platform.command.PermissionDefault
 import taboolib.common.platform.command.command
-import taboolib.common.platform.command.suggest
 import taboolib.common.platform.function.console
 import taboolib.common.platform.function.getProxyPlayer
+import taboolib.common.platform.function.submit
 import taboolib.common.util.subList
 import taboolib.module.chat.ComponentText
 import taboolib.module.chat.Components
@@ -55,41 +55,43 @@ class PrivateChannel(
 
     override fun registerCommand() {
         if (bindings.command.isNullOrEmpty()) return
-        command(
-            name = bindings.command[0],
-            aliases = subList(bindings.command, 1),
-            description = "TrChat channel $id",
-            permission = "trchat.command.channel.${id.lowercase()}",
-            permissionDefault = PermissionDefault.TRUE
-        ) {
-            execute<Player> { sender, _, _ ->
-                if (sender.session.channel == this@PrivateChannel.id) {
-                    quit(sender, true)
-                } else {
-                    sender.sendLang("Private-Message-No-Player")
-                }
-            }
-            dynamic("player", optional = true) {
-                suggest {
-                    BukkitProxyManager.getPlayerNamesMerged().filter { it !in PlayerData.vanishing }
-                }
-                execute<Player> { sender, _, argument ->
-                    sender.session.lastPrivateTo = BukkitProxyManager.getExactName(argument)
-                        ?: return@execute sender.sendLang("Command-Player-Not-Exist")
-                    join(sender, this@PrivateChannel)
-                }
-                dynamic("message", optional = true) {
-                    execute<CommandSender> { sender, ctx, argument ->
-                        BukkitProxyManager.getExactName(ctx["player"])?.let {
-                            if (sender is Player) sender.session.lastPrivateTo = it
-                            else consolePrivateTo = it
-                            execute(sender, argument)
-                        } ?: sender.sendLang("Command-Player-Not-Exist")
+        submit {
+            command(
+                name = bindings.command[0],
+                aliases = subList(bindings.command, 1),
+                description = "TrChat channel $id",
+                permission = "trchat.command.channel.${id.lowercase()}",
+                permissionDefault = PermissionDefault.TRUE
+            ) {
+                execute<Player> { sender, _, _ ->
+                    if (sender.session.channel == this@PrivateChannel.id) {
+                        quit(sender, true)
+                    } else {
+                        sender.sendLang("Private-Message-No-Player")
                     }
                 }
-            }
-            incorrectSender { sender, _ ->
-                sender.sendLang("Command-Not-Player")
+                dynamic("player", optional = true) {
+                    suggestion<CommandSender> { sender, _ ->
+                        BukkitProxyManager.getPlayerNamesMerged(sender.hasPermission("trchat.bypass.vanish")).toList()
+                    }
+                    execute<Player> { sender, _, argument ->
+                        sender.session.lastPrivateTo = BukkitProxyManager.getExactName(argument)
+                            ?: return@execute sender.sendLang("Command-Player-Not-Exist")
+                        join(sender, this@PrivateChannel)
+                    }
+                    dynamic("message", optional = true) {
+                        execute<CommandSender> { sender, ctx, argument ->
+                            BukkitProxyManager.getExactName(ctx["player"])?.let {
+                                if (sender is Player) sender.session.lastPrivateTo = it
+                                else consolePrivateTo = it
+                                execute(sender, argument)
+                            } ?: sender.sendLang("Command-Player-Not-Exist")
+                        }
+                    }
+                }
+                incorrectSender { sender, _ ->
+                    sender.sendLang("Command-Not-Player")
+                }
             }
         }
     }

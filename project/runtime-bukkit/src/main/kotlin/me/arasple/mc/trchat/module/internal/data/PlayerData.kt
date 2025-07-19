@@ -17,7 +17,6 @@ import java.util.concurrent.ConcurrentHashMap
 class PlayerData(val player: Player) {
 
     init {
-        if (isVanishing) vanishing += player.name
         if (isSpying) spying += player.name
     }
 
@@ -32,8 +31,6 @@ class PlayerData(val player: Player) {
     val isMuted get() = muteTime > System.currentTimeMillis()
 
     val muteReason get() = player.getDataContainer()["mute_reason"] ?: "null"
-
-    val isVanishing get() = player.getDataContainer()["vanish"].cbool
 
     val ignored get() = player.getDataContainer()["ignored"]
         ?.takeIf { it.isNotBlank() }
@@ -68,13 +65,6 @@ class PlayerData(val player: Player) {
         }
     }
 
-    fun switchVanish(): Boolean {
-        player.getDataContainer()["vanish"] = !isVanishing
-        return isVanishing.also {
-            if (it) vanishing += player.name else vanishing -= player.name
-        }
-    }
-
     fun addIgnored(uuid: UUID) {
         val list = player.getDataContainer()["ignored"]?.takeIf { it.isNotBlank() }?.split(",") ?: listOf()
         val new = list + uuid.parseString()
@@ -106,9 +96,7 @@ class PlayerData(val player: Player) {
 
         @JvmField
         val data = ConcurrentHashMap<UUID, PlayerData>()
-
         val spying = mutableSetOf<String>()
-        val vanishing = mutableSetOf<String>()
 
         fun getData(player: Player): PlayerData {
             return data.computeIfAbsent(player.uniqueId) {

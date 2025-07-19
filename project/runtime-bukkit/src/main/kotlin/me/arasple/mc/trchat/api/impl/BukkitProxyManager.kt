@@ -4,7 +4,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder
 import me.arasple.mc.trchat.api.ClientMessageManager
 import me.arasple.mc.trchat.api.ProxyMode
 import me.arasple.mc.trchat.module.conf.file.Settings
-import me.arasple.mc.trchat.module.internal.data.PlayerData
+import me.arasple.mc.trchat.module.internal.hook.isVanished
 import me.arasple.mc.trchat.module.internal.proxy.BukkitProxyProcessor
 import me.arasple.mc.trchat.module.internal.proxy.redis.RedisManager
 import me.arasple.mc.trchat.util.parseString
@@ -39,13 +39,11 @@ object BukkitProxyManager : ClientMessageManager {
 
     override var port = 25565
 
-    var allPlayerNames = mapOf<String, String?>()
+    var allPlayerNames = listOf<Triple<String, String?, UUID>>()
         get() = if (mode == ProxyMode.NONE) {
-            onlinePlayers.associate { it.name to ChatColor.stripColor(it.displayName) }
+            onlinePlayers.map { Triple(it.name, ChatColor.stripColor(it.displayName), it.uniqueId) }
         } else if (mode == ProxyMode.REDIS) {
-            val result = mutableMapOf<String, String?>()
-            (processor as BukkitProxyProcessor.RedisSide).allNames.values.forEach { result += it }
-            result
+            (processor as BukkitProxyProcessor.RedisSide).allNames.values.flatten()
         } else {
             field
         }
@@ -111,12 +109,16 @@ object BukkitProxyManager : ClientMessageManager {
         executor.shutdownNow()
     }
 
-    override fun getPlayerNames(): Map<String, String?> {
-        return allPlayerNames
+    override fun getPlayerNames(includeVanish: Boolean): Map<String, String?> {
+        return if (includeVanish) {
+            allPlayerNames.associate { it.first to it.second }
+        } else {
+            allPlayerNames.filterNot { it.third.isVanished() }.associate { it.first to it.second }
+        }
     }
 
-    fun getPlayerNamesMerged(): Set<String> {
-        return allPlayerNames.let { it.keys + it.values.filterNotNull() }
+    fun getPlayerNamesMerged(includeVanish: Boolean = false): Set<String> {
+        return getPlayerNames(includeVanish).let { it.keys + it.values.filterNotNull() }
     }
 
     override fun getExactName(name: String): String? {
@@ -168,8 +170,10 @@ object BukkitProxyManager : ClientMessageManager {
     fun updateNames() {
         sendMessage(onlinePlayers.firstOrNull(), arrayOf(
             "UpdateNames",
-            onlinePlayers.filter { it.name !in PlayerData.vanishing }.joinToString(",") { it.name + "-" + ChatColor.stripColor(it.displayName) },
-            port.toString()
+            port.toString(),
+            onlinePlayers.joinToString(",") { it.name },
+            onlinePlayers.joinToString(",") { ChatColor.stripColor(it.displayName)?.ifEmpty { "#" } ?: "#" },
+            onlinePlayers.joinToString(",") { it.uniqueId.parseString() }
         ))
     }
 

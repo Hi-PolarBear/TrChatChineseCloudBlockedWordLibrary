@@ -42,7 +42,7 @@ object VelocityProxyManager : ProxyMessageManager {
         Executors.newFixedThreadPool(8, factory)
     }
 
-    override val allNames = mutableMapOf<Int, Map<String, String?>>()
+    override val allNames = mutableMapOf<Int, List<Triple<String, String, String>>>()
 
     override fun sendMessage(recipient: Any, vararg args: String): Future<*> {
         if (recipient !is ChannelMessageSink) {
@@ -89,10 +89,12 @@ object VelocityProxyManager : ProxyMessageManager {
 
     @Schedule(async = true, period = 100L)
     override fun updateAllNames() {
+        val flat = allNames.values.flatten()
         sendMessageToAll(
             "UpdateAllNames",
-            allNames.values.joinToString(",") { it.keys.joinToString(",") },
-            allNames.values.joinToString(",") { it.values.joinToString(",") }
+            flat.joinToString(",") { it.first },
+            flat.joinToString(",") { it.second },
+            flat.joinToString(",") { it.third },
         )
     }
 

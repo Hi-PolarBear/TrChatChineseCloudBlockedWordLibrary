@@ -33,6 +33,7 @@ import taboolib.platform.util.bukkitPlugin
 import taboolib.platform.util.deserializeToInventory
 import taboolib.platform.util.onlinePlayers
 import java.io.IOException
+import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Future
 
@@ -101,9 +102,11 @@ sealed interface BukkitProxyProcessor : PluginMessageListener {
             "UpdateAllNames" -> {
                 BukkitProxyManager.updateNames()
                 val names = data[1].takeIf { it != "" }?.split(",") ?: return
-                BukkitProxyManager.allPlayerNames = data[2].split(",").mapIndexed { index, displayName ->
-                    names[index] to displayName.takeIf { it != "null" }
-                }.toMap()
+                val displayNames = data[2].split(",")
+                val uuids = data[3].split(",")
+                BukkitProxyManager.allPlayerNames = names.mapIndexed { index, name ->
+                    Triple(names[index], displayNames[index].takeIf { it != "#" }, uuids[index].toUUID())
+                }
             }
             "GlobalMute" -> {
                 when (data[1]) {
@@ -230,7 +233,7 @@ sealed interface BukkitProxyProcessor : PluginMessageListener {
 
     object RedisSide : BukkitProxyProcessor {
 
-        val allNames = mutableMapOf<Int, Map<String, String?>>()
+        val allNames = mutableMapOf<Int, List<Triple<String, String?, UUID>>>()
 
         init {
             submitAsync(period = 200L) {
@@ -241,9 +244,13 @@ sealed interface BukkitProxyProcessor : PluginMessageListener {
         override fun execute(data: Array<String>) {
             when (data[0]) {
                 "UpdateNames" -> {
-                    val port = data[2].toInt()
-                    val names = data[1].takeIf { it != "" }?.split(",")?.map { it.split("-", limit = 2) } ?: return
-                    allNames[port] = names.associate { it[0] to it[1].takeIf { dn -> dn != "null" } }
+                    val port = data[1].toInt()
+                    val names = data[2].split(",")
+                    val displayNames = data[3].split(",")
+                    val uuids = data[4].split(",")
+                    allNames[port] = names.mapIndexed { index, name ->
+                        Triple(name, displayNames[index].takeIf { it != "#" }, uuids[index].toUUID())
+                    }
                 }
                 else -> super.execute(data)
             }

@@ -1,4 +1,5 @@
 import io.izzel.taboolib.gradle.*
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -37,7 +38,7 @@ subprojects {
             install(Bukkit, BungeeCord, Velocity)
         }
         version {
-            taboolib = "6.2.3-12d4045"
+            taboolib = "6.2.3-7105e58f"
             coroutines = null
 //            isSkipKotlin = true
 //            isSkipKotlinRelocate = true
@@ -74,8 +75,8 @@ subprojects {
         options.encoding = "UTF-8"
     }
     tasks.withType<KotlinCompile> {
-        kotlinOptions {
-            jvmTarget = "1.8"
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_1_8
             freeCompilerArgs = listOf("-Xjvm-default=all", "-Xextended-compiler-checks")
         }
     }

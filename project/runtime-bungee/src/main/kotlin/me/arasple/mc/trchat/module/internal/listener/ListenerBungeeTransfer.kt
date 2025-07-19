@@ -58,7 +58,7 @@ object ListenerBungeeTransfer {
                 val ports = data[5].takeIf { it != "" }?.split(";")?.map { it.toInt() }
                 val message = try {
                     Components.parseRaw(raw).also { it.sendTo(console()) }
-                } catch (e: Throwable) {
+                } catch (_: Throwable) {
                     Components.text("Unable to parse raw message!")
                 }
 
@@ -77,8 +77,12 @@ object ListenerBungeeTransfer {
                 }
             }
             "UpdateNames" -> {
-                val names = data[1].split(",").map { it.split("-", limit = 2) }
-                BungeeProxyManager.allNames[connection.address.port] = names.associate { it[0] to it[1].takeIf { dn -> dn != "null" } }
+                val names = data[2].split(",")
+                val displayNames = data[3].split(",")
+                val uuids = data[4].split(",")
+                BungeeProxyManager.allNames[connection.address.port] = names.mapIndexed { index, name ->
+                    Triple(name, displayNames[index], uuids[index])
+                }
             }
         }
     }

@@ -18,7 +18,7 @@ import taboolib.module.nms.PacketSendEvent
 object ListenerPackets {
 
     @ConfigNode("Options.Cheat-Client-Secure-Chat", "settings.yml")
-    var cheatClientSecureChat = true
+    var cheatClientSecureChat = false
         private set
 
     /**

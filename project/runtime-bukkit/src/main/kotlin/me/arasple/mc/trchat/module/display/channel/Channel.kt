@@ -15,10 +15,7 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import taboolib.common.platform.command.PermissionDefault
 import taboolib.common.platform.command.command
-import taboolib.common.platform.function.adaptPlayer
-import taboolib.common.platform.function.console
-import taboolib.common.platform.function.getProxyPlayer
-import taboolib.common.platform.function.unregisterCommand
+import taboolib.common.platform.function.*
 import taboolib.common.util.Strings
 import taboolib.common.util.subList
 import taboolib.module.chat.ComponentText
@@ -58,31 +55,33 @@ open class Channel(
 
     open fun registerCommand() {
         if (bindings.command.isNullOrEmpty()) return
-        command(
-            name = bindings.command[0],
-            aliases = subList(bindings.command, 1),
-            description = "TrChat channel $id",
-            permission = "trchat.command.channel.${id.lowercase()}",
-            permissionDefault = PermissionDefault.TRUE
-        ) {
-            execute<Player> { sender, _, _ ->
-                if (sender.session.channel == this@Channel.id) {
-                    quit(sender, setDefault = true)
-                } else {
-                    join(sender, this@Channel)
-                }
-            }
-            dynamic("message", optional = true) {
-                execute<CommandSender> { sender, _, argument ->
-                    if (sender is Player) {
-                        execute(sender, argument)
+        submit {
+            command(
+                name = bindings.command[0],
+                aliases = subList(bindings.command, 1),
+                description = "TrChat channel $id",
+                permission = "trchat.command.channel.${id.lowercase()}",
+                permissionDefault = PermissionDefault.TRUE
+            ) {
+                execute<Player> { sender, _, _ ->
+                    if (sender.session.channel == this@Channel.id) {
+                        quit(sender, setDefault = true)
                     } else {
-                        execute(sender, argument)
+                        join(sender, this@Channel)
                     }
                 }
-            }
-            incorrectSender { sender, _ ->
-                sender.sendLang("Command-Not-Player")
+                dynamic("message", optional = true) {
+                    execute<CommandSender> { sender, _, argument ->
+                        if (sender is Player) {
+                            execute(sender, argument)
+                        } else {
+                            execute(sender, argument)
+                        }
+                    }
+                }
+                incorrectSender { sender, _ ->
+                    sender.sendLang("Command-Not-Player")
+                }
             }
         }
     }
@@ -237,7 +236,7 @@ open class Channel(
         }
         if (!player.hasPermission("trchat.bypass.repeat")) {
             val lastMessage = player.session.lastPublicMessage
-            if (Settings.chatSimilarity > 0 && Strings.similarDegree(lastMessage, message) > Settings.chatSimilarity) {
+            if (Settings.chatSimilarity > 0 && Settings.chatSimilarity <= 1 && Strings.similarDegree(lastMessage, message) >= Settings.chatSimilarity) {
                 player.sendLang("General-Too-Similar")
                 return false
             }
@@ -257,7 +256,9 @@ open class Channel(
     }
 
     open fun unregister() {
-        bindings.command?.forEach { unregisterCommand(it) }
+        submit {
+            bindings.command?.forEach { unregisterCommand(it) }
+        }
         listeners.clear()
     }
 
