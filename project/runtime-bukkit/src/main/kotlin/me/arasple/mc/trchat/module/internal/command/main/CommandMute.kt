@@ -1,20 +1,21 @@
 package me.arasple.mc.trchat.module.internal.command.main
 
+import me.arasple.mc.trchat.api.impl.BukkitProxyManager
 import me.arasple.mc.trchat.module.conf.file.Settings
 import me.arasple.mc.trchat.module.internal.TrChatBukkit
+import me.arasple.mc.trchat.module.internal.data.PlayerData
 import me.arasple.mc.trchat.util.data
 import org.bukkit.Bukkit
+import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.command.command
-import taboolib.common.platform.command.suggest
 import taboolib.common.platform.command.suggestUncheck
 import taboolib.common5.util.parseMillis
 import taboolib.expansion.createHelper
-import taboolib.platform.util.onlinePlayers
 import taboolib.platform.util.sendLang
 import java.text.SimpleDateFormat
 
@@ -35,8 +36,8 @@ object CommandMute {
         if (Settings.conf.getStringList("Options.Disabled-Commands").contains("mute")) return
         command("mute", listOf("trmute"), description = "Mute a player", permission = "trchat.command.mute") {
             dynamic("player") {
-                suggest {
-                    onlinePlayers.map { it.name }
+                suggestUncheck {
+                    BukkitProxyManager.getPlayerNames(true).keys.toList()
                 }
                 execute<CommandSender> { sender, ctx, _ ->
                     mute(sender, ctx["player"], "999d", "null")
@@ -61,33 +62,53 @@ object CommandMute {
         }
         command("unmute", listOf("trunmute"), description = "Unmute a player", permission = "trchat.command.unmute") {
             dynamic("player") {
-                suggest {
-                    onlinePlayers.map { it.name }
+                suggestUncheck {
+                    BukkitProxyManager.getPlayerNames(true).keys.toList()
                 }
                 execute<CommandSender> { sender, ctx, _ ->
-                    val player = Bukkit.getPlayer(ctx["player"])
-                        ?: return@execute sender.sendLang("Command-Player-Not-Exist")
-                    player.data.updateMuteTime(0)
-                    sender.sendLang("Mute-Cancel-Muted-Player", player.name)
-                    player.sendLang("General-Cancel-Muted")
+                    val name = ctx["player"]
+                    val player = Bukkit.getOfflinePlayer(name)
+                    if (!player.hasPlayedBefore()) {
+                        return@execute sender.sendLang("Command-Player-Not-Exist")
+                    }
+                    unmute(sender, player)
                 }
             }
         }
     }
 
     fun mute(sender: CommandSender, name: String, time: String, reason: String) {
-        val player = Bukkit.getPlayer(name)
-            ?: return sender.sendLang("Command-Player-Not-Exist")
+        val player = Bukkit.getOfflinePlayer(name)
+        if (!player.hasPlayedBefore()) {
+            return sender.sendLang("Command-Player-Not-Exist")
+        }
+        mute(sender, player, time, reason)
+    }
+
+    fun mute(sender: CommandSender?, player: OfflinePlayer, time: String, reason: String) {
         val data = player.data
         val millis = try {
             time.parseMillis()
         } catch (_: Throwable) {
-            return sender.sendLang("Mute-Wrong-Format", time)
+            sender?.sendLang("Mute-Wrong-Format", time)
+            return
         }
         data.updateMuteTime(millis)
         data.setMuteReason(reason)
-        sender.sendLang("Mute-Muted-Player", player.name, time, reason)
-        player.sendLang("General-Muted", muteDateFormat.format(data.muteTime), data.muteReason)
+        sender?.sendLang("Mute-Muted-Player", player.name ?: "unknown", time, reason)
+        player.player?.sendLang("General-Muted", muteDateFormat.format(data.muteTime), data.muteReason)
+        if (!player.isOnline) {
+            PlayerData.removeData(player)
+        }
+    }
+
+    fun unmute(sender: CommandSender?, player: OfflinePlayer) {
+        player.data.updateMuteTime(0)
+        sender?.sendLang("Mute-Cancel-Muted-Player", player.name ?: "unknown")
+        player.player?.sendLang("General-Cancel-Muted")
+        if (!player.isOnline) {
+            PlayerData.removeData(player)
+        }
     }
 
     @Awake(LifeCycle.ENABLE)

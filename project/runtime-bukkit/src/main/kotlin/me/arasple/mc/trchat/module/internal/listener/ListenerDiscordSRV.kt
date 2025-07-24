@@ -4,7 +4,7 @@ import github.scarsz.discordsrv.api.Subscribe
 import github.scarsz.discordsrv.api.events.DiscordGuildMessagePreBroadcastEvent
 import github.scarsz.discordsrv.api.events.GameChatMessagePreProcessEvent
 import github.scarsz.discordsrv.dependencies.kyori.adventure.text.serializer.gson.GsonComponentSerializer
-import me.arasple.mc.trchat.TrChat
+import me.arasple.mc.trchat.api.impl.BukkitComponentManager
 import me.arasple.mc.trchat.module.display.format.MsgComponent
 import me.arasple.mc.trchat.module.internal.hook.hookDiscordSRV
 import me.arasple.mc.trchat.util.pass
@@ -14,7 +14,7 @@ import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
-import taboolib.common.platform.function.adaptPlayer
+import taboolib.module.chat.Components
 
 class ListenerDiscordSRV {
 
@@ -23,11 +23,11 @@ class ListenerDiscordSRV {
         val player = e.player
         val channel = player.session.lastChannel ?: return
         if (channel.settings.sendToDiscord) {
-            val message = TrChat.api().getFilterManager().filter(e.message, adaptPlayer(player)).filtered
+            val origin = Components.parseRaw(GsonComponentSerializer.gson().serialize(e.messageComponent))
             val component = (channel.formats
                 .firstOrNull { it.condition.pass(player) }?.msg
                 ?.firstOrNull { it.condition.pass(player) }?.content as? MsgComponent)
-                ?.createComponent(player, message, channel.settings.disabledFunctions)
+                ?.createComponent(player, BukkitComponentManager.filterComponent(origin), channel.settings.disabledFunctions)
                 ?: return
             e.messageComponent = GsonComponentSerializer.gson().deserialize(component.toRawMessage())
             if (channel.settings.discordChannel.isNotEmpty()) {

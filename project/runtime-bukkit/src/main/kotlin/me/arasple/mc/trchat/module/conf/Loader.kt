@@ -25,12 +25,14 @@ import taboolib.common.io.newFile
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.ProxyCommandSender
+import taboolib.common.platform.function.console
 import taboolib.common.platform.function.getDataFolder
 import taboolib.common.platform.function.releaseResourceFile
 import taboolib.common.util.asList
 import taboolib.common.util.orNull
 import taboolib.common.util.unsafeLazy
 import taboolib.common5.Coerce
+import taboolib.common5.util.parseMillis
 import taboolib.library.configuration.ConfigurationSection
 import taboolib.module.configuration.util.getMap
 import taboolib.module.lang.sendLang
@@ -196,10 +198,13 @@ object Loader {
             val priority = map.getInt("priority", 100)
             val regex = map.getString("pattern")!!.toRegex()
             val filterTextRegex = map.getString("text-filter")?.toRegex()
+            val cooldown = kotlin.runCatching { map.getString("cooldown")?.parseMillis() }
+                .onFailure { console().sendLang("Mute-Wrong-Format", map.getString("cooldown")!!) }
+                .getOrNull()
             val displayJson = parseJSON(map.getConfigurationSection("display")!!.toMap(), isMsg = false)
             val reaction = map["action"]?.let { Reaction(it.asList()) }
 
-            CustomFunction(id, condition, priority, regex, filterTextRegex, displayJson, reaction)
+            CustomFunction(id, condition, priority, regex, filterTextRegex, cooldown, displayJson, reaction)
         }.sortedBy { it.priority }
 
         Function.reload(functions)

@@ -8,7 +8,6 @@ import me.arasple.mc.trchat.util.color.CustomColor
 import me.arasple.mc.trchat.util.color.MessageColors
 import me.arasple.mc.trchat.util.data
 import org.bukkit.entity.Player
-import taboolib.expansion.getDataContainer
 import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.module.chat.ComponentText
 import taboolib.module.chat.Components
@@ -52,7 +51,7 @@ class ChatSession(val player: Player) {
         return if (forces.isNotEmpty()) {
             CustomColor.get(forces[0])
         } else {
-            val selectedColor = player.getDataContainer()["color"].takeIf { it != "null" }
+            val selectedColor = player.data.color
             if (selectedColor != null && player.hasPermission(MessageColors.COLOR_PERMISSION_NODE + selectedColor)) {
                 CustomColor.get(selectedColor)
             } else {

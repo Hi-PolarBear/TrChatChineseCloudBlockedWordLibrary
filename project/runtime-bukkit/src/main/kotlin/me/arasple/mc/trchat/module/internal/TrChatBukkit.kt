@@ -11,6 +11,7 @@ import me.arasple.mc.trchat.module.display.channel.Channel
 import me.arasple.mc.trchat.module.display.function.Function
 import me.arasple.mc.trchat.module.internal.data.PlayerData
 import me.arasple.mc.trchat.module.internal.hook.HookPlugin
+import me.arasple.mc.trchat.util.hasClass
 import org.bukkit.Bukkit
 import taboolib.common.LifeCycle
 import taboolib.common.platform.*
@@ -31,13 +32,10 @@ object TrChatBukkit : Plugin() {
     var isGlobalMuting = false
 
     internal fun detectPaperEnv() {
-        try {
-            // Paper 1.16.5+
-            Class.forName("com.destroystokyo.paper.PaperConfig")
-            if (versionId >= 11604) {
-                isPaperEnv = true
-            }
-        } catch (_: ClassNotFoundException) {
+        if ((hasClass("com.destroystokyo.paper.PaperConfig")
+            || hasClass("io.papermc.paper.configuration.Configuration"))
+            && versionId >= 11604) {
+            isPaperEnv = true
         }
         if (Folia.isFolia || (isPaperEnv && MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_20))) {
             Components.useAdventure = true
@@ -51,6 +49,7 @@ object TrChatBukkit : Plugin() {
 //        registerLifeCycleTask(LifeCycle.INIT, 0) {
 //            YamlUpdater.update("settings.yml", updateExists = false)
 //        }
+        MinecraftVersion.supportedVersion[13] = arrayOf("!1.21", "1.21.1", "!1.21.2", "1.21.3", "1.21.4", "1.21.5", "!1.21.6", "1.21.7", "1.21.8")
     }
 
     override fun onLoad() {

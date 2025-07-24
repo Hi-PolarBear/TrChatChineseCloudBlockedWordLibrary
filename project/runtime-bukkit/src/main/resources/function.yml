@@ -145,6 +145,7 @@ Custom:
   # 示例 —— 高亮邮箱
   glowEmail:
     pattern: '\w[-\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\.)+[A-Za-z]{2,14}'
+    cooldown: '5s'
     display:
       text: '&e&n{0}'
       hover:

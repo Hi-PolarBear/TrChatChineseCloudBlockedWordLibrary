@@ -5,7 +5,9 @@ import me.arasple.mc.trchat.module.internal.script.Condition
 import me.arasple.mc.trchat.module.internal.script.Reaction
 import me.arasple.mc.trchat.util.pass
 import org.bukkit.entity.Player
+import taboolib.common5.Baffle
 import taboolib.module.chat.ComponentText
+import java.util.concurrent.TimeUnit
 
 /**
  * @author ItsFlicker
@@ -17,9 +19,12 @@ class CustomFunction(
     val priority: Int,
     val regex: Regex,
     val filterTextRegex: Regex?,
+    val cooldown: Long?,
     val displayJson: JsonComponent,
     override val reaction: Reaction?
 ) : Function(id) {
+
+    val baffle = cooldown?.let { Baffle.of(it, TimeUnit.MILLISECONDS) }
 
     override fun createVariable(sender: Player, message: String): String {
         return message.replaceRegex(regex, filterTextRegex) { "{{$id:$it}}" }
@@ -34,6 +39,12 @@ class CustomFunction(
     }
 
     override fun checkCooldown(sender: Player, message: String): Boolean {
+        if (sender.hasPermission("trchat.bypass.customcd")) {
+            return true
+        }
+        if (baffle != null) {
+            return baffle.hasNext(sender.name)
+        }
         return true
     }
 

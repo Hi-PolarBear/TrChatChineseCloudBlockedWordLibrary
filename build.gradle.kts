@@ -40,8 +40,6 @@ subprojects {
         version {
             taboolib = "6.2.3-a372a91"
             coroutines = null
-//            isSkipKotlin = true
-//            isSkipKotlinRelocate = true
         }
     }
 

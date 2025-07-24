@@ -8,8 +8,6 @@ import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.SubscribeEvent
-import taboolib.expansion.playerDataContainer
-import taboolib.expansion.releaseDataContainer
 
 /**
  * @author ItsFlicker
@@ -22,12 +20,9 @@ object ListenerQuit {
     fun onQuit(e: PlayerQuitEvent) {
         val player = e.player
 
-        if (!playerDataContainer.containsKey(player.uniqueId)) return
-
         Channel.channels.values.forEach { it.listeners -= player.name }
         ChatSession.removeSession(player)
         PlayerData.removeData(player)
-        player.releaseDataContainer()
     }
 
 }

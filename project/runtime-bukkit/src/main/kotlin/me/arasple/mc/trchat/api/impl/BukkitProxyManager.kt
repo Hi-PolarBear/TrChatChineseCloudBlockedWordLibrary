@@ -8,8 +8,8 @@ import me.arasple.mc.trchat.module.internal.hook.isVanished
 import me.arasple.mc.trchat.module.internal.proxy.BukkitProxyProcessor
 import me.arasple.mc.trchat.module.internal.proxy.redis.RedisManager
 import me.arasple.mc.trchat.util.parseString
+import net.md_5.bungee.api.ChatColor
 import org.bukkit.Bukkit
-import org.bukkit.ChatColor
 import org.bukkit.plugin.messaging.PluginMessageRecipient
 import org.spigotmc.SpigotConfig
 import taboolib.common.platform.Platform

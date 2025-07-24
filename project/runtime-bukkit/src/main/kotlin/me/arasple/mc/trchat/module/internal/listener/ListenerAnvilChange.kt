@@ -5,6 +5,7 @@ import me.arasple.mc.trchat.module.adventure.toAdventure
 import me.arasple.mc.trchat.module.internal.TrChatBukkit
 import me.arasple.mc.trchat.util.color.MessageColors
 import me.arasple.mc.trchat.util.parseSimple
+import org.bukkit.event.inventory.InventoryEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.inventory.PrepareAnvilEvent
 import org.bukkit.inventory.meta.ItemMeta
@@ -39,7 +40,8 @@ object ListenerAnvilChange {
     @Suppress("Deprecation")
     @SubscribeEvent(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onAnvilCraft(e: PrepareAnvilEvent) {
-        val p = e.view.player
+        // e.view -> AnvilView
+        val p = (e as InventoryEvent).view.player
         val result = e.result
 
         if (e.inventory.type != InventoryType.ANVIL || result.isAir()) {

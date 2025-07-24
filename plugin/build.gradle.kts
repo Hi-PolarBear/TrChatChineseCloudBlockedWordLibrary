@@ -19,6 +19,10 @@ taboolib {
             name("Multiverse-Core").with("bukkit").loadafter(true)
             name("Geyser-Spigot").with("bukkit").loadafter(true)
         }
+//        version {
+//            isSkipKotlin = true
+//            isSkipKotlinRelocate = true
+//        }
     }
     relocate("com.eatthepath.uuid.", "${rootProject.group}.library.uuid.")
 //    relocate("net.md_5.bungee", "net.md_5.bungee121")

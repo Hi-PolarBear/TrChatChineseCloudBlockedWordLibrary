@@ -55,16 +55,16 @@ fun String.parseInline(sender: CommandSender, vars: Map<String, Any> = emptyMap(
 
 inline val Player.session get() = ChatSession.getSession(this)
 
-inline val Player.data get() = PlayerData.getData(this)
+inline val OfflinePlayer.data get() = PlayerData.getData(this)
 
-fun Player.checkMute(): Boolean {
+fun Player.checkMute(hint: Boolean = true): Boolean {
     if (TrChatBukkit.isGlobalMuting && !hasPermission("trchat.bypass.globalmute")) {
-        sendLang("General-Global-Muting")
+        if (hint) sendLang("General-Global-Muting")
         return false
     }
     val data = data
     if (data.isMuted) {
-        sendLang("General-Muted", CommandMute.muteDateFormat.format(data.muteTime), data.muteReason)
+        if (hint) sendLang("General-Muted", CommandMute.muteDateFormat.format(data.muteTime), data.muteReason)
         return false
     }
     return true

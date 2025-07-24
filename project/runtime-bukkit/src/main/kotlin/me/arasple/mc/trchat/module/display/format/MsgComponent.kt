@@ -22,7 +22,7 @@ import taboolib.module.chat.impl.AdventureComponent
  */
 class MsgComponent(val defaultColor: List<Pair<CustomColor, Condition?>>, style: List<Style>) : JsonComponent(null, style) {
 
-    fun processComponent(sender: CommandSender, msg: TextComponent, disabledFunctions: List<String>): TextComponent {
+    private fun processComponent(sender: CommandSender, msg: TextComponent, disabledFunctions: List<String>): TextComponent {
         val children = msg.children().map { processComponent(sender, it as TextComponent, disabledFunctions) }
         val new = createComponent(sender, msg.content(), disabledFunctions).toAdventureObject() as TextComponent
         val style = new.style().merge(msg.style())

@@ -11,7 +11,7 @@ import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.adaptPlayer
 import taboolib.common.platform.function.submit
-import taboolib.expansion.setupDataContainer
+import taboolib.common.platform.function.submitAsync
 
 /**
  * @author ItsFlicker
@@ -24,9 +24,10 @@ object ListenerJoin {
     fun onJoin(e: PlayerJoinEvent) {
         val player = e.player
 
-        player.setupDataContainer()
-        player.data
-        player.session
+        submitAsync {
+            player.data
+            player.session
+        }
 
         submit(delay = 20) {
             if (!player.isOnline) return@submit
