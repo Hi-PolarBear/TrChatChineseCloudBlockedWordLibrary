@@ -21,8 +21,4 @@ interface ClientMessageManager {
 
     fun sendMessage(recipient: Any?, data: Array<String>): Future<*>
 
-    fun sendMessage(recipient: Any?, vararg data: String): Future<*> {
-        return sendMessage(recipient, arrayOf(*data))
-    }
-
 }
