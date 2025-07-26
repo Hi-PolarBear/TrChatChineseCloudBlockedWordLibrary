@@ -201,10 +201,11 @@ object Loader {
             val cooldown = kotlin.runCatching { map.getString("cooldown")?.parseMillis() }
                 .onFailure { console().sendLang("Mute-Wrong-Format", map.getString("cooldown")!!) }
                 .getOrNull()
+            val cooldownMessage = map.getString("cooldown-message")
             val displayJson = parseJSON(map.getConfigurationSection("display")!!.toMap(), isMsg = false)
             val reaction = map["action"]?.let { Reaction(it.asList()) }
 
-            CustomFunction(id, condition, priority, regex, filterTextRegex, cooldown, displayJson, reaction)
+            CustomFunction(id, condition, priority, regex, filterTextRegex, cooldown, cooldownMessage, displayJson, reaction)
         }.sortedBy { it.priority }
 
         Function.reload(functions)

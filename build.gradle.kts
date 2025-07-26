@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     java
-    id("io.izzel.taboolib") version "2.0.23"
+    id("io.izzel.taboolib") version "2.0.25"
     id("org.jetbrains.kotlin.jvm") version "2.1.20"
 }
 
@@ -36,9 +36,10 @@ subprojects {
             )
             install(JavaScript)
             install(Bukkit, BungeeCord, Velocity)
+            disableOnSkippedVersion = false
         }
         version {
-            taboolib = "6.2.3-a372a91"
+            taboolib = "6.2.3-ac49c9a"
             coroutines = null
         }
     }

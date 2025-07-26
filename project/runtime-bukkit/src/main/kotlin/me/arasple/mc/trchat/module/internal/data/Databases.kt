@@ -8,11 +8,10 @@ import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.function.disablePlugin
-import taboolib.expansion.DataContainer
 import taboolib.expansion.playerDatabase
 import taboolib.expansion.setupPlayerDatabase
 
-lateinit var globalPDC: DataContainer
+//lateinit var globalPDC: DataContainer
 
 @PlatformSide(Platform.BUKKIT)
 object Databases {
@@ -32,7 +31,7 @@ object Databases {
                     playerDatabase = event.database ?: error("Unsupported database type: $type")
                 }
             }
-            globalPDC = DataContainer(".", playerDatabase!!)
+//            globalPDC = DataContainer(".", playerDatabase!!)
         } catch (t: Throwable) {
             t.print("Failed to load database! Plugin will be disabled.")
             disablePlugin()

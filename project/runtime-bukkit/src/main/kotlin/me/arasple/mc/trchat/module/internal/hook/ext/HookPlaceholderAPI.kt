@@ -25,6 +25,8 @@ import taboolib.platform.compat.PlaceholderExpansion
 @PlatformSide(Platform.BUKKIT)
 object HookPlaceholderAPI : PlaceholderExpansion {
 
+    private var checked = false
+
     override val identifier: String
         get() = "trchat"
 
@@ -59,7 +61,10 @@ object HookPlaceholderAPI : PlaceholderExpansion {
 
     @SubscribeEvent(priority = EventPriority.LOW)
     fun onChat(e: TrChatEvent) {
-        if (e.forward && !PAPIUtil.checkExpansions(e.session.player)) {
+        if (checked) return
+        if (PAPIUtil.checkExpansions(e.session.player)) {
+            checked = true
+        } else {
             e.isCancelled = true
         }
     }

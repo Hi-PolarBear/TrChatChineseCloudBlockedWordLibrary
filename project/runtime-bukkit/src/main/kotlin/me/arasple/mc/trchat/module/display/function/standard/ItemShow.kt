@@ -206,6 +206,7 @@ object ItemShow : Function("ITEM") {
     @Suppress("Deprecation")
     private fun ItemStack.getNameComponent(player: Player): ComponentText {
         if (!originName && itemMeta?.hasDisplayName() == true) {
+            // display_name
             if (isDragonCoreHooked) {
                 return Components.text(itemMeta!!.displayName, color = false)
             }
@@ -225,6 +226,7 @@ object ItemShow : Function("ITEM") {
             }
             return Components.text(itemMeta!!.itemName)
         } else {
+            // origin name
             if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_15)) {
                 val key = try {
                     if (Components.useAdventure) {

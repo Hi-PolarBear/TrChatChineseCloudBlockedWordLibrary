@@ -10,6 +10,7 @@ import me.arasple.mc.trchat.util.toUUID
 import net.kyori.adventure.audience.MessageType
 import net.kyori.adventure.identity.Identity
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.SubscribeEvent
@@ -56,7 +57,9 @@ object ListenerVelocityTransfer {
                 val perm = data[3]
                 val doubleTransfer = data[4].toBoolean()
                 val ports = data[5].takeIf { it != "" }?.split(";")?.map { it.toInt() }
-                val message = GsonComponentSerializer.gson().deserialize(raw)
+                val fallback = data[6]
+                val message = kotlin.runCatching { GsonComponentSerializer.gson().deserialize(raw) }
+                    .getOrElse { LegacyComponentSerializer.legacySection().deserialize(fallback) }
                 plugin.server.consoleCommandSource.sendMessage(message)
 
                 if (doubleTransfer) {

@@ -202,8 +202,7 @@ class PrivateChannel(
         player.sendComponent(player, send)
 
         PlayerData.spying.forEach {
-            Bukkit.getPlayer(it)
-                ?.sendLang("Private-Message-Spy-Format", player.name, to, msgComponent.toLegacyText())
+            Bukkit.getPlayer(it)?.sendLang("Private-Message-Spy-Format", player.name, to, msgComponent.toLegacyText())
         }
         console().sendLang("Private-Message-Spy-Format", player.name, to, msgComponent.toLegacyText())
 

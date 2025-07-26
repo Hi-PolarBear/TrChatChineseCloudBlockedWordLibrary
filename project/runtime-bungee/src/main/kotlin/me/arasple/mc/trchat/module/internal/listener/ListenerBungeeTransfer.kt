@@ -56,11 +56,9 @@ object ListenerBungeeTransfer {
                 val perm = data[3]
                 val doubleTransfer = data[4].toBoolean()
                 val ports = data[5].takeIf { it != "" }?.split(";")?.map { it.toInt() }
-                val message = try {
-                    Components.parseRaw(raw).also { it.sendTo(console()) }
-                } catch (_: Throwable) {
-                    Components.text("Unable to parse raw message!")
-                }
+                val fallback = data[6]
+                val message = kotlin.runCatching { Components.parseRaw(raw) }.getOrElse { Components.text(fallback) }
+                message.sendTo(console())
 
                 if (doubleTransfer) {
                     BungeeProxyManager.sendMessageToAll("BroadcastRaw", uuid, raw, perm, data[4], data[5]) {

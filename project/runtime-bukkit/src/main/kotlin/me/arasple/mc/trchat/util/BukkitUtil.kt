@@ -79,3 +79,9 @@ fun Player.getCooldownLeft(type: CooldownType) = Cooldowns.getCooldownLeft(uniqu
 fun Player.isInCooldown(type: CooldownType) = Cooldowns.isInCooldown(uniqueId, type.alias)
 
 fun Player.updateCooldown(type: CooldownType, lasts: Long) = Cooldowns.updateCooldown(uniqueId, type.alias, lasts)
+
+fun Player.getCooldownLeft(type: String) = Cooldowns.getCooldownLeft(uniqueId, type)
+
+fun Player.isInCooldown(type: String) = Cooldowns.isInCooldown(uniqueId, type)
+
+fun Player.updateCooldown(type: String, lasts: Long) = Cooldowns.updateCooldown(uniqueId, type, lasts)

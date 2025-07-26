@@ -144,6 +144,8 @@ object BukkitProxyManager : ClientMessageManager {
         return processor!!.sendMessage(recipient, executor, data)
     }
 
+
+
     fun sendProxyLang(recipient: Any?, target: String, node: String, vararg args: String) {
         if (processor == null || Bukkit.getPlayerExact(target) != null) {
             getProxyPlayer(target)?.sendLang(node, *args)
@@ -152,19 +154,28 @@ object BukkitProxyManager : ClientMessageManager {
         }
     }
 
-    fun sendBroadcastRaw(recipient: Any?, uuid: UUID, component: ComponentText, listenPerm: String = "", doubleTransfer: Boolean = true, ports: List<Int> = emptyList()) {
+    fun sendBroadcastRaw(
+        recipient: Any?,
+        uuid: UUID,
+        component: ComponentText,
+        listenPerm: String = "",
+        doubleTransfer: Boolean = true,
+        ports: List<Int> = emptyList(),
+        fallback: String = component.toLegacyText()
+    ) {
         sendMessage(recipient, arrayOf(
             "BroadcastRaw",
             uuid.parseString(),
             component.toRawMessage(),
             listenPerm,
             doubleTransfer.toString(),
-            ports.joinToString(";"))
+            ports.joinToString(";"),
+            fallback)
         )
     }
 
-    fun sendPrivateRaw(recipient: Any?, to: String, from: String, component: ComponentText) {
-        sendMessage(recipient, arrayOf("ForwardMessage", "SendPrivateRaw", to, from, component.toRawMessage()))
+    fun sendPrivateRaw(recipient: Any?, to: String, from: String, component: ComponentText, fallback: String = component.toLegacyText()) {
+        sendMessage(recipient, arrayOf("ForwardMessage", "SendPrivateRaw", to, from, component.toRawMessage(), fallback))
     }
 
     fun updateNames() {

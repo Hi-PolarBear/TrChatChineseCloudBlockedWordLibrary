@@ -76,7 +76,8 @@ sealed interface BukkitProxyProcessor : PluginMessageListener {
                 val to = data[1]
                 val from = data[2]
                 val raw = data[3]
-                val message = Components.parseRaw(raw)
+                val fallback = data[4]
+                val message = kotlin.runCatching { Components.parseRaw(raw) }.getOrElse { Components.text(fallback) }
 
                 if (from.isNotEmpty()) {
                     CommandReply.lastMessageFrom[to] = from
@@ -88,7 +89,8 @@ sealed interface BukkitProxyProcessor : PluginMessageListener {
                 val raw = data[2]
                 val perm = data[3]
                 val ports = data[5].takeIf { it != "" }?.split(";")?.map { it.toInt() }
-                val message = Components.parseRaw(raw)
+                val fallback = data[6]
+                val message = kotlin.runCatching { Components.parseRaw(raw) }.getOrElse { Components.text(fallback) }
 
                 if (ports == null || BukkitProxyManager.port in ports) {
                     onlinePlayers
