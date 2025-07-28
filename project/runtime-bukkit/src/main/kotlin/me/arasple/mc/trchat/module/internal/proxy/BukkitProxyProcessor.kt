@@ -26,7 +26,6 @@ import taboolib.common5.util.decodeBase64
 import taboolib.module.chat.Components
 import taboolib.module.lang.asLangText
 import taboolib.module.lang.sendLang
-import taboolib.module.nms.MinecraftVersion
 import taboolib.module.ui.MenuHolder
 import taboolib.module.ui.type.impl.ChestImpl
 import taboolib.platform.util.bukkitPlugin
@@ -76,7 +75,7 @@ sealed interface BukkitProxyProcessor : PluginMessageListener {
                 val to = data[1]
                 val from = data[2]
                 val raw = data[3]
-                val fallback = data[4]
+                val fallback = data.getOrElse(4) { "" }
                 val message = kotlin.runCatching { Components.parseRaw(raw) }.getOrElse { Components.text(fallback) }
 
                 if (from.isNotEmpty()) {
@@ -89,7 +88,7 @@ sealed interface BukkitProxyProcessor : PluginMessageListener {
                 val raw = data[2]
                 val perm = data[3]
                 val ports = data[5].takeIf { it != "" }?.split(";")?.map { it.toInt() }
-                val fallback = data[6]
+                val fallback = data.getOrElse(6) { "" }
                 val message = kotlin.runCatching { Components.parseRaw(raw) }.getOrElse { Components.text(fallback) }
 
                 if (ports == null || BukkitProxyManager.port in ports) {
@@ -117,35 +116,47 @@ sealed interface BukkitProxyProcessor : PluginMessageListener {
                 }
             }
             "ItemShow" -> {
-                if (data[1] > MinecraftVersion.minecraftVersion) return
+//                if (data[1] > MinecraftVersion.minecraftVersion) return
                 val name = data[2]
                 val sha1 = data[3]
                 if (ItemShow.cacheInventory.getIfPresent(sha1) == null) {
-                    val inventory = data[4].decodeBase64().deserializeToInventory(
-                        createNoClickChest(3, console().asLangText("Function-Item-Show-Title", name))
-                    )
+                    val inventory = try {
+                        data[4].decodeBase64().deserializeToInventory(
+                            createNoClickChest(3, console().asLangText("Function-Item-Show-Title", name))
+                        )
+                    } catch (_: Throwable) {
+                        return
+                    }
                     ItemShow.cacheInventory.put(sha1, inventory)
                 }
             }
             "InventoryShow" -> {
-                if (data[1] > MinecraftVersion.minecraftVersion) return
+//                if (data[1] > MinecraftVersion.minecraftVersion) return
                 val name = data[2]
                 val sha1 = data[3]
                 if (InventoryShow.cache.getIfPresent(sha1) == null) {
-                    val inventory = data[4].decodeBase64().deserializeToInventory(
-                        createNoClickChest(6, console().asLangText("Function-Inventory-Show-Title", name))
-                    )
+                    val inventory = try {
+                        data[4].decodeBase64().deserializeToInventory(
+                            createNoClickChest(6, console().asLangText("Function-Inventory-Show-Title", name))
+                        )
+                    } catch (_: Throwable) {
+                        return
+                    }
                     InventoryShow.cache.put(sha1, inventory)
                 }
             }
             "EnderChestShow" -> {
-                if (data[1] > MinecraftVersion.minecraftVersion) return
+//                if (data[1] > MinecraftVersion.minecraftVersion) return
                 val name = data[2]
                 val sha1 = data[3]
                 if (EnderChestShow.cache.getIfPresent(sha1) == null) {
-                    val inventory = data[4].decodeBase64().deserializeToInventory(
-                        createNoClickChest(3, console().asLangText("Function-EnderChest-Show-Title", name))
-                    )
+                    val inventory = try {
+                        data[4].decodeBase64().deserializeToInventory(
+                            createNoClickChest(3, console().asLangText("Function-EnderChest-Show-Title", name))
+                        )
+                    } catch (_: Throwable) {
+                        return
+                    }
                     EnderChestShow.cache.put(sha1, inventory)
                 }
             }

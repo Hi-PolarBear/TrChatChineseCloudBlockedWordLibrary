@@ -57,13 +57,13 @@ object ListenerVelocityTransfer {
                 val perm = data[3]
                 val doubleTransfer = data[4].toBoolean()
                 val ports = data[5].takeIf { it != "" }?.split(";")?.map { it.toInt() }
-                val fallback = data[6]
+                val fallback = data.getOrElse(6) { "" }
                 val message = kotlin.runCatching { GsonComponentSerializer.gson().deserialize(raw) }
                     .getOrElse { LegacyComponentSerializer.legacySection().deserialize(fallback) }
                 plugin.server.consoleCommandSource.sendMessage(message)
 
                 if (doubleTransfer) {
-                    VelocityProxyManager.sendMessageToAll("BroadcastRaw", uuid, raw, perm, data[4], data[5]) {
+                    VelocityProxyManager.sendMessageToAll(*data) {
                         ports == null || it.serverInfo.address.port in ports
                     }
                 } else {
