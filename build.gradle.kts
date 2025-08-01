@@ -39,7 +39,7 @@ subprojects {
             disableOnSkippedVersion = false
         }
         version {
-            taboolib = "6.2.3-ac49c9a"
+            taboolib = "6.2.3-6b5f38c"
             coroutines = null
         }
     }
@@ -61,7 +61,7 @@ subprojects {
         compileOnly(kotlin("stdlib"))
         compileOnly("com.google.code.gson:gson:2.8.5")
         compileOnly("com.google.guava:guava:21.0")
-        compileOnly("net.kyori:adventure-api:4.21.0")
+        compileOnly("net.kyori:adventure-api:4.24.0")
     }
 
     // 编译配置

@@ -4,10 +4,15 @@ import me.arasple.mc.trchat.module.conf.file.Settings
 import me.arasple.mc.trchat.module.internal.script.Condition
 import me.arasple.mc.trchat.util.*
 import me.arasple.mc.trchat.util.color.colorify
+import me.arasple.mc.trchat.util.color.parseToShadowColor
+import net.kyori.adventure.text.format.ShadowColor
 import org.bukkit.command.CommandSender
+import taboolib.common.platform.function.warning
 import taboolib.common.util.replaceWithOrder
 import taboolib.module.chat.ComponentText
 import taboolib.module.chat.Components
+import taboolib.module.chat.impl.AdventureComponent
+import taboolib.module.chat.impl.DefaultComponent
 
 sealed interface Style {
 
@@ -27,6 +32,25 @@ sealed interface Style {
         }
     }
 
+    data class Shadow(override val contents: List<Pair<String, Condition?>>) : Style {
+        override fun process(component: ComponentText, content: String) {
+            val color = content.parseToShadowColor()
+            try {
+                if (component is DefaultComponent) {
+                    component.latest.forEach {
+                        it.shadowColor = color.toJavaColor()
+                    }
+                } else if (component is AdventureComponent) {
+                    component.latest.shadowColor(ShadowColor.shadowColor(color.toJavaColor().rgb))
+                }
+            } catch (e: Throwable) {
+                e.printStackTrace()
+                warning("Shadow color is unsupported for this version.")
+            }
+
+        }
+    }
+
     sealed interface Hover : Style {
 
         data class Text(override val contents: List<Pair<String, Condition?>>) : Hover {
@@ -42,13 +66,6 @@ sealed interface Style {
                 }
             }
         }
-
-        data class Entity(override val contents: List<Pair<String, Condition?>>) : Hover {
-            override fun process(component: ComponentText, content: String) {
-//                component.hoverEntity()
-            }
-        }
-
     }
 
     sealed interface Click : Style {
@@ -86,7 +103,6 @@ sealed interface Style {
                 component.clickOpenFile(content)
             }
         }
-
     }
 
     companion object {
@@ -109,6 +125,5 @@ sealed interface Style {
                 process(component, content)
             }
         }
-
     }
 }

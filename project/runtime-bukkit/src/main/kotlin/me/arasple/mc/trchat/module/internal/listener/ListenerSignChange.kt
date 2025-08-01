@@ -41,13 +41,15 @@ object ListenerSignChange {
         for (origin in e.lines) {
             index++
             if (origin.isBlank()) continue
+            var edited = origin
             if (filter) {
-                e.setLine(index, TrChat.api().getFilterManager().filter(origin, adaptPlayer(p)).filtered)
+                edited = TrChat.api().getFilterManager().filter(origin, adaptPlayer(p)).filtered
+                e.setLine(index, edited)
             }
             if (simple && TrChatBukkit.isPaperEnv && p.hasPermission("trchat.simple.sign")) {
-                e.line(index, (e.getLine(index) ?: "").parseSimple().toAdventure())
+                e.line(index, edited.parseSimple().toAdventure())
             } else if (color) {
-                e.setLine(index, MessageColors.replaceWithPermission(p, e.getLine(index) ?: "", MessageColors.Type.SIGN))
+                e.setLine(index, MessageColors.replaceWithPermission(p, edited, MessageColors.Type.SIGN))
             }
         }
     }

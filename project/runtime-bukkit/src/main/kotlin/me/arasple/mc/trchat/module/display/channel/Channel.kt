@@ -55,7 +55,7 @@ open class Channel(
 
     open fun registerCommand() {
         if (bindings.command.isNullOrEmpty()) return
-        submit {
+        submit(delay = 5L) {
             command(
                 name = bindings.command[0],
                 aliases = subList(bindings.command, 1),
@@ -256,7 +256,7 @@ open class Channel(
     }
 
     open fun unregister() {
-        submit {
+        submit(delay = 4L) {
             bindings.command?.forEach { unregisterCommand(it) }
         }
         listeners.clear()

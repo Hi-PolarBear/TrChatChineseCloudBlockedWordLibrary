@@ -243,6 +243,7 @@ object Loader {
         style += content["file"]?.serialize()?.map { it.first to it.second.getCondition() }?.let { Style.Click.File(it) }
         style += content["insertion"]?.serialize()?.map { it.first to it.second.getCondition() }?.let { Style.Insertion(it) }
         style += content["font"]?.serialize()?.map { it.first to it.second.getCondition() }?.let { Style.Font(it) }
+        style += content["shadow"]?.serialize()?.map { it.first to it.second.getCondition() }?.let { Style.Shadow(it) }
         return if (isMsg) {
             val defaultColor = content["default-color"]!!.serialize().map { CustomColor.get(it.first) to it.second.getCondition() }
             MsgComponent(defaultColor, style.filterNotNull())

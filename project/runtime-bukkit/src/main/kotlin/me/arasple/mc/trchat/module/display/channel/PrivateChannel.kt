@@ -55,7 +55,7 @@ class PrivateChannel(
 
     override fun registerCommand() {
         if (bindings.command.isNullOrEmpty()) return
-        submit {
+        submit(delay = 5L) {
             command(
                 name = bindings.command[0],
                 aliases = subList(bindings.command, 1),
