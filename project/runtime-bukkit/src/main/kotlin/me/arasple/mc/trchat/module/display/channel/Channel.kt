@@ -8,6 +8,7 @@ import me.arasple.mc.trchat.module.display.channel.obj.*
 import me.arasple.mc.trchat.module.display.format.Format
 import me.arasple.mc.trchat.module.display.format.MsgComponent
 import me.arasple.mc.trchat.module.display.function.Function
+import me.arasple.mc.trchat.module.internal.TrChatBukkit
 import me.arasple.mc.trchat.module.internal.data.ChatLogs
 import me.arasple.mc.trchat.module.internal.service.Metrics
 import me.arasple.mc.trchat.util.*
@@ -15,7 +16,9 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import taboolib.common.platform.command.PermissionDefault
 import taboolib.common.platform.command.command
-import taboolib.common.platform.function.*
+import taboolib.common.platform.function.adaptPlayer
+import taboolib.common.platform.function.console
+import taboolib.common.platform.function.getProxyPlayer
 import taboolib.common.util.Strings
 import taboolib.common.util.subList
 import taboolib.module.chat.ComponentText
@@ -37,6 +40,8 @@ open class Channel(
     val consoleFormat: List<Format>
 ) {
 
+    var isUnregistered = false
+
     val listeners: MutableSet<String> = mutableSetOf()
 
     open fun init() {
@@ -54,34 +59,33 @@ open class Channel(
     }
 
     open fun registerCommand() {
-        if (bindings.command.isNullOrEmpty()) return
-        submit(delay = 5L) {
-            command(
-                name = bindings.command[0],
-                aliases = subList(bindings.command, 1),
-                description = "TrChat channel $id",
-                permission = "trchat.command.channel.${id.lowercase()}",
-                permissionDefault = PermissionDefault.TRUE
-            ) {
-                execute<Player> { sender, _, _ ->
-                    if (sender.session.channel == this@Channel.id) {
-                        quit(sender, setDefault = true)
+        if (bindings.command.isNullOrEmpty() || TrChatBukkit.isActivated) return
+        command(
+            name = bindings.command[0],
+            aliases = subList(bindings.command, 1),
+            description = "TrChat channel $id",
+            permission = "trchat.command.channel.${id.lowercase()}",
+            permissionDefault = PermissionDefault.TRUE
+        ) {
+            execute<Player> { sender, _, _ ->
+                if (sender.session.channel == id) {
+                    quit(sender, setDefault = true)
+                } else {
+                    join(sender, id)
+                }
+            }
+            dynamic("message", optional = true) {
+                execute<CommandSender> { sender, _, argument ->
+                    val channel = channels[id] ?: return@execute
+                    if (sender is Player) {
+                        channel.execute(sender, argument)
                     } else {
-                        join(sender, this@Channel)
+                        channel.execute(sender, argument)
                     }
                 }
-                dynamic("message", optional = true) {
-                    execute<CommandSender> { sender, _, argument ->
-                        if (sender is Player) {
-                            execute(sender, argument)
-                        } else {
-                            execute(sender, argument)
-                        }
-                    }
-                }
-                incorrectSender { sender, _ ->
-                    sender.sendLang("Command-Not-Player")
-                }
+            }
+            incorrectSender { sender, _ ->
+                sender.sendLang("Command-Not-Player")
             }
         }
     }
@@ -256,9 +260,7 @@ open class Channel(
     }
 
     open fun unregister() {
-        submit(delay = 4L) {
-            bindings.command?.forEach { unregisterCommand(it) }
-        }
+        isUnregistered = true
         listeners.clear()
     }
 

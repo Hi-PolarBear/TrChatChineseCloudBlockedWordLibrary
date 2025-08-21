@@ -8,6 +8,7 @@ import me.arasple.mc.trchat.module.display.channel.obj.ChannelExecuteResult
 import me.arasple.mc.trchat.module.display.channel.obj.ChannelSettings
 import me.arasple.mc.trchat.module.display.format.Format
 import me.arasple.mc.trchat.module.display.format.MsgComponent
+import me.arasple.mc.trchat.module.internal.TrChatBukkit
 import me.arasple.mc.trchat.module.internal.command.main.CommandReply
 import me.arasple.mc.trchat.module.internal.data.ChatLogs
 import me.arasple.mc.trchat.module.internal.data.PlayerData
@@ -22,7 +23,6 @@ import taboolib.common.platform.command.PermissionDefault
 import taboolib.common.platform.command.command
 import taboolib.common.platform.function.console
 import taboolib.common.platform.function.getProxyPlayer
-import taboolib.common.platform.function.submit
 import taboolib.common.util.subList
 import taboolib.module.chat.ComponentText
 import taboolib.module.chat.Components
@@ -54,44 +54,43 @@ class PrivateChannel(
     }
 
     override fun registerCommand() {
-        if (bindings.command.isNullOrEmpty()) return
-        submit(delay = 5L) {
-            command(
-                name = bindings.command[0],
-                aliases = subList(bindings.command, 1),
-                description = "TrChat channel $id",
-                permission = "trchat.command.channel.${id.lowercase()}",
-                permissionDefault = PermissionDefault.TRUE
-            ) {
-                execute<Player> { sender, _, _ ->
-                    if (sender.session.channel == this@PrivateChannel.id) {
-                        quit(sender, true)
-                    } else {
-                        sender.sendLang("Private-Message-No-Player")
+        if (bindings.command.isNullOrEmpty() || TrChatBukkit.isActivated) return
+        command(
+            name = bindings.command[0],
+            aliases = subList(bindings.command, 1),
+            description = "TrChat channel $id",
+            permission = "trchat.command.channel.${id.lowercase()}",
+            permissionDefault = PermissionDefault.TRUE
+        ) {
+            execute<Player> { sender, _, _ ->
+                if (sender.session.channel == id) {
+                    quit(sender, setDefault = true)
+                } else {
+                    sender.sendLang("Private-Message-No-Player")
+                }
+            }
+            dynamic("player", optional = true) {
+                suggestion<CommandSender> { sender, _ ->
+                    BukkitProxyManager.getPlayerNamesMerged(sender.hasPermission("trchat.bypass.vanish")).toList()
+                }
+                execute<Player> { sender, _, argument ->
+                    sender.session.lastPrivateTo = BukkitProxyManager.getExactName(argument)
+                        ?: return@execute sender.sendLang("Command-Player-Not-Exist")
+                    join(sender, id)
+                }
+                dynamic("message", optional = true) {
+                    execute<CommandSender> { sender, ctx, argument ->
+                        val channel = channels[id] ?: return@execute
+                        BukkitProxyManager.getExactName(ctx["player"])?.let {
+                            if (sender is Player) sender.session.lastPrivateTo = it
+                            else consolePrivateTo = it
+                            channel.execute(sender, argument)
+                        } ?: sender.sendLang("Command-Player-Not-Exist")
                     }
                 }
-                dynamic("player", optional = true) {
-                    suggestion<CommandSender> { sender, _ ->
-                        BukkitProxyManager.getPlayerNamesMerged(sender.hasPermission("trchat.bypass.vanish")).toList()
-                    }
-                    execute<Player> { sender, _, argument ->
-                        sender.session.lastPrivateTo = BukkitProxyManager.getExactName(argument)
-                            ?: return@execute sender.sendLang("Command-Player-Not-Exist")
-                        join(sender, this@PrivateChannel)
-                    }
-                    dynamic("message", optional = true) {
-                        execute<CommandSender> { sender, ctx, argument ->
-                            BukkitProxyManager.getExactName(ctx["player"])?.let {
-                                if (sender is Player) sender.session.lastPrivateTo = it
-                                else consolePrivateTo = it
-                                execute(sender, argument)
-                            } ?: sender.sendLang("Command-Player-Not-Exist")
-                        }
-                    }
-                }
-                incorrectSender { sender, _ ->
-                    sender.sendLang("Command-Not-Player")
-                }
+            }
+            incorrectSender { sender, _ ->
+                sender.sendLang("Command-Not-Player")
             }
         }
     }

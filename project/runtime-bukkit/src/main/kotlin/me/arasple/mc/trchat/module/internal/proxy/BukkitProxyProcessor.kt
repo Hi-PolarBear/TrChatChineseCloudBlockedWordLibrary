@@ -246,7 +246,7 @@ sealed interface BukkitProxyProcessor : PluginMessageListener {
 
     object RedisSide : BukkitProxyProcessor {
 
-        val allNames = mutableMapOf<Int, List<Triple<String, String?, UUID>>>()
+        val allNames = mutableMapOf<String, List<Triple<String, String?, UUID>>>()
 
         init {
             submitAsync(period = 200L) {
@@ -257,7 +257,7 @@ sealed interface BukkitProxyProcessor : PluginMessageListener {
         override fun execute(data: Array<String>) {
             when (data[0]) {
                 "UpdateNames" -> {
-                    val port = data[1].toInt()
+                    val port = data[1]
                     val names = data[2].split(",")
                     val displayNames = data[3].split(",")
                     val uuids = data[4].split(",")

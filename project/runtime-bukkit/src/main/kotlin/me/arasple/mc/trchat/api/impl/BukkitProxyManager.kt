@@ -63,11 +63,12 @@ object BukkitProxyManager : ClientMessageManager {
     }
 
     override val mode: ProxyMode by unsafeLazy {
-        val force = kotlin.runCatching {
-            ProxyMode.valueOf(Settings.conf.getString("Options.Proxy")?.uppercase() ?: "AUTO")
-        }
-        if (force.isSuccess) {
-            return@unsafeLazy force.getOrThrow()
+        val force = Settings.conf.getString("Options.Proxy")?.uppercase() ?: "AUTO"
+        if (force != "AUTO") {
+            try {
+                return@unsafeLazy ProxyMode.valueOf(force)
+            } catch (_: IllegalArgumentException) {
+            }
         }
         if (RedisManager.enabled) {
             console().sendLang("Plugin-Proxy-Supported", "Redis")

@@ -31,6 +31,8 @@ object TrChatBukkit : Plugin() {
 
     var isGlobalMuting = false
 
+    var isActivated = false
+
     internal fun detectPaperEnv() {
         if ((hasClass("com.destroystokyo.paper.PaperConfig")
             || hasClass("io.papermc.paper.configuration.Configuration"))
@@ -67,6 +69,10 @@ object TrChatBukkit : Plugin() {
         HookPlugin.printInfo()
         reload(console())
         console().sendLang("Plugin-Enabled", pluginVersion)
+    }
+
+    override fun onActive() {
+        isActivated = true
     }
 
     override fun onDisable() {
