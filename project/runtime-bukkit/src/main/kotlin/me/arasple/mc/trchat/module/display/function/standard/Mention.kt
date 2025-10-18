@@ -57,7 +57,7 @@ object Mention : Function("MENTION") {
         val result = message.replace(regex) {
             val name = it.groupValues[1]
             if (TrChatMentionEvent(sender, name).call()) {
-                "{{MENTION:$name}}"
+                "{{MENTION:${push(name)}}}"
             } else {
                 it.value
             }

@@ -44,7 +44,7 @@ fun String.setPlaceholders(sender: CommandSender): String {
             this
         }
     } catch (t: Throwable) {
-        t.print("Error occurred when parsing placeholder!This is not a bug of TrChat")
+        t.print("Error occurred when parsing placeholder! This is not a bug of TrChat! 这不是 TrChat 的问题!")
         this
     }
 }

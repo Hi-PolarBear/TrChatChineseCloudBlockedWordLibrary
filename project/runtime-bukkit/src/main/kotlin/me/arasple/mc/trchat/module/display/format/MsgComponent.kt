@@ -8,7 +8,10 @@ import me.arasple.mc.trchat.util.color.CustomColor
 import me.arasple.mc.trchat.util.isDragonCoreHooked
 import me.arasple.mc.trchat.util.pass
 import me.arasple.mc.trchat.util.session
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.event.HoverEvent
+import net.kyori.adventure.text.format.TextColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import taboolib.common.util.VariableReader
@@ -22,11 +25,23 @@ import taboolib.module.chat.impl.AdventureComponent
  */
 class MsgComponent(val defaultColor: List<Pair<CustomColor, Condition?>>, style: List<Style>) : JsonComponent(null, style) {
 
-    private fun processComponent(sender: CommandSender, msg: TextComponent, disabledFunctions: List<String>): TextComponent {
-        val children = msg.children().map { processComponent(sender, it as TextComponent, disabledFunctions) }
-        val new = createComponent(sender, msg.content(), disabledFunctions).toAdventureObject() as TextComponent
+    private fun processComponent(sender: CommandSender, msg: TextComponent, disabledFunctions: List<String>, depth: Int = 1): TextComponent {
+        val children = msg.children().map { processComponent(sender, it as TextComponent, disabledFunctions, depth + 1) }
+        var new = createComponent(sender, msg.content(), disabledFunctions).toAdventureObject() as TextComponent
         val style = new.style().merge(msg.style())
-        return new.children(new.children() + children).style(style)
+        new = new.children(new.children() + children).style(style)
+        // https://github.com/TrPlugins/TrChat/issues/511 粗暴的解决方法 (主要是由于不同children的错位，merge无法解决)
+        if (msg.content().isNotBlank() && msg.children().isEmpty()) {
+            val color = msg.style().color()
+            if (color != null) {
+                new = changeColor(new, color) as TextComponent
+            }
+            val hover = msg.style().hoverEvent()
+            if (hover != null) {
+                new = changeHover(new, hover) as TextComponent
+            }
+        }
+        return new
     }
 
     fun createComponent(sender: CommandSender, msg: ComponentText, disabledFunctions: List<String>): ComponentText {
@@ -62,7 +77,7 @@ class MsgComponent(val defaultColor: List<Pair<CustomColor, Condition?>>, style:
                 val args = part.text.split(":", limit = 2)
                 val function = Function.functions.firstOrNull { it.id == args[0] }
                 if (function != null) {
-                    function.parseVariable(sender, args[1])?.let { component.append(it) }
+                    function.parseVariable(sender, Function.pop(args[1].toInt()))?.let { component.append(it) }
                     function.reaction?.eval(sender, "message" to message)
                 }
                 continue
@@ -88,5 +103,25 @@ class MsgComponent(val defaultColor: List<Pair<CustomColor, Condition?>>, style:
     companion object {
 
         private val parser = VariableReader()
+
+        private fun changeColor(msg: Component, color: TextColor): Component {
+            val new = if (msg.style().color() != null) {
+                msg.style(msg.style().color(color))
+            } else {
+                msg
+            }
+            val children = new.children().map { changeColor(it, color) }
+            return new.children(children)
+        }
+
+        private fun changeHover(msg: Component, hover: HoverEvent<*>): Component {
+            val new = if (msg.style().hoverEvent() != null) {
+                msg.style(msg.style().hoverEvent(hover))
+            } else {
+                msg
+            }
+            val children = new.children().map { changeHover(it, hover) }
+            return new.children(children)
+        }
     }
 }

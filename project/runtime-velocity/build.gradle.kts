@@ -15,7 +15,7 @@ java {
 tasks.withType<KotlinCompile> {
     compilerOptions {
         jvmTarget = JvmTarget.JVM_17
-        freeCompilerArgs = listOf("-Xjvm-default=all", "-Xextended-compiler-checks")
+        freeCompilerArgs = listOf("-Xjvm-default=all")
     }
 }
 

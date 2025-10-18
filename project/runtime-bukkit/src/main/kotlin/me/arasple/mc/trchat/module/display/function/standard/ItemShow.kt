@@ -93,10 +93,10 @@ object ItemShow : Function("ITEM") {
         var result = message
         keys.forEach { key ->
             (1..9).forEach {
-                result = result.replace("$key-$it", "{{ITEM:$it}}", ignoreCase = true)
-                result = result.replace("$key$it", "{{ITEM:$it}}", ignoreCase = true)
+                result = result.replace("$key-$it", "{{ITEM:${push(it)}}}", ignoreCase = true)
+                result = result.replace("$key$it", "{{ITEM:${push(it)}}}", ignoreCase = true)
             }
-            result = result.replace(key, "{{ITEM:${sender.inventory.heldItemSlot + 1}}}", ignoreCase = true)
+            result = result.replace(key, "{{ITEM:${push(sender.inventory.heldItemSlot + 1)}}}", ignoreCase = true)
         }
         return result
     }

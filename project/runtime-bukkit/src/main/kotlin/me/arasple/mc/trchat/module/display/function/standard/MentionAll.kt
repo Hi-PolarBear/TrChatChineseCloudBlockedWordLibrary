@@ -55,7 +55,7 @@ object MentionAll : Function("MENTIONALL") {
         }
         var result = message
         keys.forEach {
-            result = result.replace(it, "{{MENTIONALL:${sender.name}}}")
+            result = result.replace(it, "{{MENTIONALL:${push(sender.name)}}}")
         }
         return result
     }

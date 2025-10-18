@@ -8,7 +8,9 @@ import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.platform.function.adaptPlayer
 import taboolib.common.platform.function.severe
+import taboolib.common.platform.function.warning
 import taboolib.common.util.VariableReader
+import taboolib.common.util.random
 import taboolib.common.util.replaceWithOrder
 import taboolib.module.chat.ComponentText
 import taboolib.module.chat.Components
@@ -32,6 +34,28 @@ abstract class Function(val id: String) {
 
         @JvmStatic
         val functions = mutableListOf<Function>()
+
+        @JvmStatic
+        val args = arrayOfNulls<String>(1000)
+
+        fun push(arg: Any): Int {
+            var i = random(1000)
+            var retry = 0
+            while (args[i] != null) {
+                if (retry >= 15) {
+                    warning("Unexpected function 'args' status! Please contact the maintainer!")
+                    break
+                }
+                retry++
+                i = random(1000)
+            }
+            args[i] = arg.toString()
+            return i
+        }
+
+        fun pop(i: Int): String {
+            return args[i]!!.also { args[i] = null }
+        }
 
         private val parser = VariableReader("[", "]")
 

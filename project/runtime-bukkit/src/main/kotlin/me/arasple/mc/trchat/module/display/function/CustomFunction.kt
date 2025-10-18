@@ -29,7 +29,7 @@ class CustomFunction(
 ) : Function(id) {
 
     override fun createVariable(sender: Player, message: String): String {
-        return message.replaceRegex(regex, filterTextRegex) { "{{$id:$it}}" }
+        return message.replaceRegex(regex, filterTextRegex) { "{{$id:${push(it)}}}" }
     }
 
     override fun parseVariable(sender: Player, arg: String): ComponentText {

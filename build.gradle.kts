@@ -4,8 +4,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     java
-    id("io.izzel.taboolib") version "2.0.25"
-    id("org.jetbrains.kotlin.jvm") version "2.1.20"
+    id("io.izzel.taboolib") version "2.0.27"
+    id("org.jetbrains.kotlin.jvm") version "2.2.20"
 }
 
 subprojects {
@@ -39,7 +39,7 @@ subprojects {
             disableOnSkippedVersion = false
         }
         version {
-            taboolib = "6.2.3-6bdc1c7"
+            taboolib = "6.2.3-664550e"
             coroutines = null
         }
     }
@@ -76,7 +76,7 @@ subprojects {
     tasks.withType<KotlinCompile> {
         compilerOptions {
             jvmTarget = JvmTarget.JVM_1_8
-            freeCompilerArgs = listOf("-Xjvm-default=all", "-Xextended-compiler-checks")
+            freeCompilerArgs = listOf("-Xjvm-default=all")
         }
     }
 }

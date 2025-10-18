@@ -70,7 +70,7 @@ object InventoryShow : Function("INVENTORY") {
         }
         var result = message
         keys.forEach {
-            result = result.replaceFirst(it, "{{INVENTORY:${sender.name}}}", ignoreCase = true)
+            result = result.replaceFirst(it, "{{INVENTORY:${push(sender.name)}}}", ignoreCase = true)
         }
         return result
     }

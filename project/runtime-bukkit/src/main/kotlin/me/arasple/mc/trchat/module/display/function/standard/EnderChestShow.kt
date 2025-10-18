@@ -68,7 +68,7 @@ object EnderChestShow : Function("ENDERCHEST") {
         }
         var result = message
         keys.forEach {
-            result = result.replaceFirst(it, "{{ENDERCHEST:${sender.name}}}", ignoreCase = true)
+            result = result.replaceFirst(it, "{{ENDERCHEST:${push(sender.name)}}}", ignoreCase = true)
         }
         return result
     }
