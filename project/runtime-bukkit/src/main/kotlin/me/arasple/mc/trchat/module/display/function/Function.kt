@@ -7,6 +7,7 @@ import taboolib.common.io.runningClassesWithoutLibrary
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.platform.function.adaptPlayer
+import taboolib.common.platform.function.info
 import taboolib.common.platform.function.severe
 import taboolib.common.platform.function.warning
 import taboolib.common.util.VariableReader
@@ -44,6 +45,9 @@ abstract class Function(val id: String) {
             while (args[i] != null) {
                 if (retry >= 15) {
                     warning("Unexpected function 'args' status! Please contact the maintainer!")
+                    args.forEachIndexed { i, s ->
+                        if (s != null) info("${i}: $s")
+                    }
                     break
                 }
                 retry++

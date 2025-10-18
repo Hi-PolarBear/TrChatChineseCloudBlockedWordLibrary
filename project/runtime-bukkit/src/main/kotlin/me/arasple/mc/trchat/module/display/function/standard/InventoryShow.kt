@@ -56,6 +56,10 @@ object InventoryShow : Function("INVENTORY") {
     @ConfigNode("General.Inventory-Show.Keys", "function.yml")
     var keys = listOf<String>()
 
+    val keysRegex by resettableLazy("functions") {
+        keys.map { Regex(Regex.escape(it), RegexOption.IGNORE_CASE) }
+    }
+
     val cache: Cache<String, Inventory> = CacheBuilder.newBuilder()
         .maximumSize(10)
         .build()
@@ -69,8 +73,8 @@ object InventoryShow : Function("INVENTORY") {
             return message
         }
         var result = message
-        keys.forEach {
-            result = result.replaceFirst(it, "{{INVENTORY:${push(sender.name)}}}", ignoreCase = true)
+        keysRegex.forEach {
+            result = result.replace(it) { "{{INVENTORY:${push(sender.name)}}}" }
         }
         return result
     }

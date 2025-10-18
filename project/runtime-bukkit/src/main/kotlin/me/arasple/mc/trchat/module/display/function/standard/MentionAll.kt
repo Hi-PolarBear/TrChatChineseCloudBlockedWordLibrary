@@ -49,13 +49,17 @@ object MentionAll : Function("MENTIONALL") {
     @ConfigNode("General.Mention-All.Keys", "function.yml")
     var keys = emptyList<String>()
 
+    val keysRegex by resettableLazy("functions") {
+        keys.map { Regex(Regex.escape(it), RegexOption.IGNORE_CASE) }
+    }
+
     override fun createVariable(sender: Player, message: String): String {
         if (!enabled) {
             return message
         }
         var result = message
-        keys.forEach {
-            result = result.replace(it, "{{MENTIONALL:${push(sender.name)}}}")
+        keysRegex.forEach {
+            result = result.replace(it) { "{{MENTIONALL:${push(sender.name)}}}" }
         }
         return result
     }
