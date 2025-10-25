@@ -5,7 +5,7 @@ import me.arasple.mc.trchat.module.adventure.toAdventure
 import me.arasple.mc.trchat.module.internal.TrChatBukkit
 import me.arasple.mc.trchat.util.color.MessageColors
 import me.arasple.mc.trchat.util.parseSimple
-import org.bukkit.event.inventory.InventoryEvent
+import org.bukkit.entity.HumanEntity
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.inventory.PrepareAnvilEvent
 import org.bukkit.inventory.meta.ItemMeta
@@ -14,6 +14,7 @@ import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.adaptPlayer
+import taboolib.library.reflex.Reflex.Companion.invokeMethod
 import taboolib.module.configuration.ConfigNode
 import taboolib.platform.util.isAir
 import taboolib.platform.util.modifyMeta
@@ -41,7 +42,8 @@ object ListenerAnvilChange {
     @SubscribeEvent(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onAnvilCraft(e: PrepareAnvilEvent) {
         // e.view -> AnvilView
-        val p = (e as InventoryEvent).view.player
+        // java.lang.IncompatibleClassChangeError: Found class org.bukkit.inventory.InventoryView, but interface was expected
+        val p = e.invokeMethod<Any>("getView")!!.invokeMethod<HumanEntity>("getPlayer")!!
         val result = e.result
 
         if (e.inventory.type != InventoryType.ANVIL || result.isAir()) {
