@@ -3,6 +3,7 @@ package me.arasple.mc.trchat.util.color
 import me.arasple.mc.trchat.util.papiRegex
 import me.arasple.mc.trchat.util.setPlaceholders
 import org.bukkit.command.CommandSender
+import taboolib.module.configuration.ConfigNode
 
 /**
  * @author ItsFlicker
@@ -16,7 +17,11 @@ class CustomColor(val type: ColorType, val color: String) {
     }
 
     fun colored(sender: CommandSender, msg: String): String {
-        var message = MessageColors.replaceWithPermission(sender, msg)
+        var message = if (chatColor) {
+            MessageColors.replaceWithPermission(sender, msg)
+        } else {
+            msg
+        }
 
         if (!msg.startsWith("§")) {
             message = when (type) {
@@ -30,6 +35,10 @@ class CustomColor(val type: ColorType, val color: String) {
     }
 
     companion object {
+
+        @ConfigNode("Color.Chat", "settings.yml")
+        var chatColor = true
+            private set
 
         private val caches = mutableMapOf<String, CustomColor>()
 

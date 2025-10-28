@@ -34,44 +34,41 @@ object MessageColors {
 
     @JvmOverloads
     fun replaceWithPermission(sender: CommandSender, s: String, type: Type = Type.CHAT): String {
-        var string = s
-
-        string = replaceWithPermission(sender, string, COLOR_PERMISSION_NODE)
-        string = replaceWithPermission(sender, string, type.node)
-
-        return string
+        return replaceWithPermission(sender, s, listOf(COLOR_PERMISSION_NODE, type.node))
     }
 
-    private fun replaceWithPermission(sender: CommandSender, s: String, node: String): String {
-        if (sender.hasPermission("$node*")) {
+    private fun replaceWithPermission(sender: CommandSender, s: String, nodes: List<String>): String {
+        if (nodes.any { node -> sender.hasPermission("$node*") }) {
             return s.colorify()
         }
         var string = s
 
         // 2025/7/14 必须清除无权限的颜色，否则会被CustomColor连带处理
-        string = if (sender.hasPermission(node + "rainbow")) {
+        string = if (nodes.any { node -> sender.hasPermission(node + "rainbow") }) {
             string.parseRainbow()
         } else {
             string.replace(HexUtils.RAINBOW_PATTERN.toRegex(), "")
         }
 
-        string = if (sender.hasPermission(node + "gradients")) {
+        string = if (nodes.any { node -> sender.hasPermission(node + "gradients") }) {
             string.parseGradients()
         } else {
             string.replace(HexUtils.GRADIENT_PATTERN.toRegex(), "")
         }
 
-        if (sender.hasPermission(node + "hex")) {
+        nodes.forEach { node ->
+            getColors(sender, node).forEach { color ->
+                string = string.replace(color, CustomColor.get(color).color)
+            }
+        }
+
+        if (nodes.any { node -> sender.hasPermission(node + "hex") }) {
             string = string.parseHex()
         } else {
             HexUtils.HEX_PATTERNS.forEach { string = string.replace(it.toRegex(), "") }
         }
 
-        getColors(sender).forEach { color ->
-            string = string.replace(color, CustomColor.get(color).color)
-        }
-
-        string = if (sender.hasPermission(node + "legacy")) {
+        string = if (nodes.any { node -> sender.hasPermission(node + "legacy") }) {
             string.parseLegacy()
         } else {
             string.replace(STRIP_COLOR_PATTERN, "")
@@ -92,8 +89,8 @@ object MessageColors {
         }.filter { it !in specialColors }
     }
 
-    fun getColors(sender: CommandSender): List<String> {
-        return getColorsFromPermissions(sender, COLOR_PERMISSION_NODE)
+    fun getColors(sender: CommandSender, node: String = COLOR_PERMISSION_NODE): List<String> {
+        return getColorsFromPermissions(sender, node)
     }
 
     fun getForceColors(sender: CommandSender): List<String> {
