@@ -37,9 +37,10 @@ subprojects {
             install(JavaScript)
             install(Bukkit, BungeeCord, Velocity)
             disableOnSkippedVersion = false
+//            disableOnUnsupportedVersion = false
         }
         version {
-            taboolib = "6.2.4-7f8b30dc"
+            taboolib = "6.2.4-5902762"
             coroutines = null
         }
     }
