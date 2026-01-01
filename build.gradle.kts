@@ -36,6 +36,7 @@ subprojects {
             )
             install(JavaScript)
             install(Bukkit, BungeeCord, Velocity)
+            modules.remove("minecraft-chat")
             disableOnSkippedVersion = false
 //            disableOnUnsupportedVersion = false
         }
@@ -62,7 +63,7 @@ subprojects {
         compileOnly(kotlin("stdlib"))
         compileOnly("com.google.code.gson:gson:2.8.5")
         compileOnly("com.google.guava:guava:21.0")
-        compileOnly("net.kyori:adventure-api:4.24.0")
+        compileOnly("net.kyori:adventure-api:4.26.1")
     }
 
     // 编译配置
