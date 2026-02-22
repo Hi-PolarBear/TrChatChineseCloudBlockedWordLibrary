@@ -1,27 +1,8 @@
-![trchat2](https://user-images.githubusercontent.com/34670283/160282372-a048a12c-911a-40da-8dce-a737c9596055.png)
+# TrChatChineseCloudBlockedWordLibrary
+Chinese Cloud-based Blocklist Library Designed for TrChat
 
-[![Version](https://img.shields.io/github/v/release/TrPlugins/TrChat?logo=VirusTotal&style=for-the-badge)](https://github.com/FlickerProjects/TrChat/releases)
-[![Issues](https://img.shields.io/github/issues/TrPlugins/TrChat?logo=StackOverflow&style=for-the-badge)](https://github.com/FlickerProjects/TrChat/issues)
-[![Last Commit](https://img.shields.io/github/last-commit/TrPlugins/TrChat?logo=ApacheRocketMQ&style=for-the-badge&color=1e90ff)](https://github.com/FlickerProjects/TrChat/commits/v2)
-[![Downloads](https://img.shields.io/github/downloads/TrPlugins/TrChat/total?style=for-the-badge&logo=docusign)](https://github.com/FlickerProjects/TrChat/releases)
----
+I was working on creating the TrChat word filter library for the server, and out of curiosity, I looked into this cloud-based word filter system. So I built this repository. Of course, it's available for everyone to use. The word filter library is in Chinese.
 
-### 🔔 What's new in TrChat v2?
-- **Optimized performance**
-- **New Channel & Format System**
-- **Better compatibility with other plugins**
+The vocabulary source is from the repository https://github.com/konsheng/Sensitive-lexicon/tree/main. I only converted them into a format compatible with TrChat.
 
----
-
-### ⛏ API usage: 
-```java
-public class Demo implements Listener {
-    
-    @EventHandler
-    private void e(TrChatEvent e) {
-        e.getChannel(); // 获取聊天频道
-        e.setCanceled(true); // 取消发送聊天
-        e.setMessage("..."); // 改变聊天内容
-    }   
-}
-```
+Change the default cloud thesaurus address in the configuration file to https://raw.githubusercontent.com/Hi-PolarBear/TrChatChineseCloudBlockedWordLibrary/refs/heads/main/%E5%B1%8F%E8%94%BD%E8%AF%8D%E5%BA%93.json and it will work.
